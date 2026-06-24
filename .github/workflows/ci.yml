@@ -31,7 +31,7 @@ jobs:
           pip install fastapi "uvicorn[standard]" "sqlalchemy[asyncio]" asyncpg alembic \
             "pydantic[email]" pydantic-settings "python-jose[cryptography]" \
             "passlib[bcrypt]" python-multipart httpx \
-            pytest pytest-asyncio pytest-cov ruff
+            pytest pytest-asyncio pytest-cov ruff -e ".[dev]"
 
       - name: Lint with Ruff
         run: ruff check .
