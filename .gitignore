@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Vite / Build outputs
+apps/web/dist/
+apps/web/.vite/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# IDE & Editor
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+.pytest_cache/
+.coverage
+coverage/
+htmlcov/
+.nyc_output/
+
+# Ruff
+.ruff_cache/
+
+# Docker
+*.dockerignore
+
+# OS
+.DS_Store
+*.DS_Store
+desktop.ini
