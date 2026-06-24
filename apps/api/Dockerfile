@@ -7,11 +7,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-RUN pip install hatchling
-
+# Install dependencies first (cached layer — only busts on pyproject.toml change)
 COPY pyproject.toml .
-RUN pip install -e ".[dev]"
+RUN pip install hatchling && \
+    pip install fastapi uvicorn[standard] sqlalchemy[asyncio] asyncpg alembic \
+    "pydantic[email]" pydantic-settings "python-jose[cryptography]" \
+    "passlib[bcrypt]" python-multipart httpx && \
+    pip install pytest pytest-asyncio pytest-cov ruff
 
+# Copy application code
 COPY . .
 
 EXPOSE 8000

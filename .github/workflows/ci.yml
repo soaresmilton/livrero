@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, dev]
   pull_request:
     branches: [main]
 
@@ -28,8 +28,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install hatchling
-          pip install -e ".[dev]"
+          pip install fastapi "uvicorn[standard]" "sqlalchemy[asyncio]" asyncpg alembic \
+            "pydantic[email]" pydantic-settings "python-jose[cryptography]" \
+            "passlib[bcrypt]" python-multipart httpx \
+            pytest pytest-asyncio pytest-cov ruff
 
       - name: Lint with Ruff
         run: ruff check .
