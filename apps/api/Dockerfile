@@ -12,7 +12,7 @@ COPY pyproject.toml .
 RUN pip install hatchling && \
     pip install fastapi uvicorn[standard] sqlalchemy[asyncio] asyncpg alembic \
     "pydantic[email]" pydantic-settings "python-jose[cryptography]" \
-    "passlib[bcrypt]" python-multipart httpx && \
+    "pwdlib[argon2,bcrypt]" python-multipart httpx && \
     pip install pytest pytest-asyncio pytest-cov ruff
 
 # Copy application code

@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1.auth import router as auth_router
 from app.api.v1.health import router as health_router
 from app.infrastructure.config.settings import get_settings
 
@@ -11,9 +12,10 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
+    # Import all models so SQLAlchemy metadata is populated
+    import app.infrastructure.persistence.models  # noqa: F401
+
     yield
-    # Shutdown
 
 
 def create_app() -> FastAPI:
@@ -35,6 +37,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health_router, prefix="/api/v1", tags=["health"])
+    app.include_router(auth_router, prefix="/api/v1")
 
     return app
 
