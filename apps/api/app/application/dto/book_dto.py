@@ -14,6 +14,7 @@ class CreateBookRequest(BaseModel):
     total_pages: int | None = Field(None, ge=1)
     cover_url: str | None = Field(None, max_length=1024)
     status: BookStatus = Field(default=BookStatus.WANT_TO_READ)
+    isbn: str | None = Field(None, max_length=13)
 
 
 class UpdateBookRequest(BaseModel):
@@ -24,6 +25,7 @@ class UpdateBookRequest(BaseModel):
     total_pages: int | None = Field(None, ge=1)
     cover_url: str | None = Field(None, max_length=1024)
     status: BookStatus | None = Field(None)
+    isbn: str | None = Field(None, max_length=13)
 
 
 class BookResponse(BaseModel):
@@ -31,13 +33,18 @@ class BookResponse(BaseModel):
     user_id: UUID
     title: str
     author: str
-    publisher: str | None
-    published_year: int | None
-    total_pages: int | None
-    cover_url: str | None
     status: BookStatus
     created_at: datetime
     updated_at: datetime
+    publisher: str | None = None
+    published_year: int | None = None
+    total_pages: int | None = None
+    cover_url: str | None = None
+    isbn: str | None = None
+    current_page: int = 0
+    started_reading_at: datetime | None = None
+    total_reading_time: int = 0
+    finished_reading_at: datetime | None = None
 
     class Config:
         from_attributes = True

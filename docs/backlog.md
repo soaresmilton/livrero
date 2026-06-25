@@ -10,16 +10,26 @@
   - Endpoint `POST /books/{id}/restore` para mudar a flag `is_deleted` para `False`.
   - Exclusão Permanente (Hard Delete manual pela Lixeira ou retenção por 30 dias).
 
-### Reading Sessions (Sessões de Leitura)
-- **Descrição**: Modelagem da entidade que atrela um Livro ao progresso do usuário.
-- **Funcionalidades**:
-  - `start_date`, `end_date`, `pages_read`.
-  - Permitir múltiplas releituras.
-  - Tela dedicada de Detalhes do Livro (`/books/{id}`) para fazer os check-ins diários de leitura.
 
-### Dashboard & Estatísticas
-- **Descrição**: Visão global da vida de leitor do usuário.
-- **Funcionalidades**:
-  - Filtros avançados por ano, mês ou data de conclusão.
-  - Gráficos de barra: "Páginas lidas por mês".
-  - Livros Favoritados.
+  ### Ordenação na página de livros
+  - **Descrição**: A página de livros deve permitir a ordenação dos livros por diversos critérios.
+  - **Funcionalidades**:
+    - Ordenação por título.
+    - Ordenação por autor.
+    - Ordenação por data de criação.
+    - Ordenação por data de atualização.
+
+
+  ### Lista / tabela de sessões de leitura
+  - **Descrição**: A página de sessões de leitura deve permitir a visualização das sessões de leitura por diversos critérios.
+  - **Funcionalidades**:
+    - Ordenação por data de início
+    - Ordenação por data de fim
+    - Ordenação por duração
+    - Ordenação por número de páginas lidas
+  - **Estrutura das colunas**: 
+    - Data de Início
+    - Data de Fim
+    - Duração
+    - Número de Páginas Lidas
+    

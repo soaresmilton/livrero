@@ -13,6 +13,10 @@ export interface Book {
   status: BookStatus;
   created_at: string;
   updated_at: string;
+  current_page: number;
+  started_reading_at?: string | null;
+  total_reading_time: number;
+  finished_reading_at?: string | null;
 }
 
 export interface PaginatedBookResponse {

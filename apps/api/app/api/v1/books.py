@@ -51,6 +51,37 @@ async def update_book(
     return await use_case.execute(user.id, parsed_uuid, request)
 
 
+@router.get("/search", response_model=list[OpenLibraryBookResponse])
+async def search_books(
+    q: str = Query(...),
+    limit: int = Query(5, ge=1, le=20),
+    open_library: OpenLibraryIntegration = Depends(get_open_library),
+) -> list[OpenLibraryBookResponse]:
+    use_case = SearchOpenLibrary(open_library)
+    return await use_case.execute(q, limit)
+
+
+@router.get("/{book_id}", response_model=BookResponse)
+async def get_book(
+    book_id: str,
+    user: User = Depends(get_current_user),
+    repo: BookRepository = Depends(get_book_repository),
+) -> BookResponse:
+    import uuid
+    try:
+        parsed_uuid = uuid.UUID(book_id)
+    except ValueError:
+        from app.shared.exceptions import bad_request
+        raise bad_request("Invalid book ID format")
+        
+    book = await repo.get_by_id(parsed_uuid)
+    from app.shared.exceptions import not_found
+    if not book or book.user_id != user.id or book.is_deleted:
+        raise not_found("Book not found")
+        
+    return BookResponse.model_validate(book)
+
+
 @router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_book(
     book_id: str,
@@ -79,13 +110,3 @@ async def list_books(
 ) -> PaginatedBookResponse:
     use_case = ListUserBooks(repo)
     return await use_case.execute(user.id, page, size, book_status, q)
-
-
-@router.get("/search", response_model=list[OpenLibraryBookResponse])
-async def search_books(
-    q: str = Query(...),
-    limit: int = Query(5, ge=1, le=20),
-    open_library: OpenLibraryIntegration = Depends(get_open_library),
-) -> list[OpenLibraryBookResponse]:
-    use_case = SearchOpenLibrary(open_library)
-    return await use_case.execute(q, limit)

@@ -20,6 +20,10 @@ class Book:
     status: BookStatus
     created_at: datetime
     updated_at: datetime
+    current_page: int = 0
+    started_reading_at: datetime | None = None
+    total_reading_time: int = 0
+    finished_reading_at: datetime | None = None
     publisher: str | None = None
     published_year: int | None = None
     total_pages: int | None = None

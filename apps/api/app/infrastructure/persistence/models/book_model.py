@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Integer, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.domain.entities.book import BookStatus
 from app.infrastructure.persistence.database import Base
@@ -40,6 +40,13 @@ class BookModel(Base):
     is_deleted: Mapped[bool] = mapped_column(default=False)
     deleted_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
+    )
+    finished_reading_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    
+    sessions = relationship(
+        "ReadingSessionModel", back_populates="book", cascade="all, delete-orphan"
     )
 
     # Optional relationship

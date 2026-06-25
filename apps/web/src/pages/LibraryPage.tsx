@@ -138,7 +138,7 @@ export function LibraryPage() {
                   setPage(1)
                 }}
                 className={`
-                  whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                  whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors cursor-pointer
                   ${activeTab === tab.value
                     ? 'border-[var(--color-primary)] text-[var(--color-on-surface)]'
                     : 'border-transparent text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] hover:border-[var(--color-outline-variant)]'

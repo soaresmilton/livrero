@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from sqlalchemy import func, select, or_
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities.book import Book, BookStatus
@@ -22,9 +23,11 @@ class SQLAlchemyBookRepository(BookRepository):
             published_year=book.published_year,
             total_pages=book.total_pages,
             cover_url=book.cover_url,
+            isbn=book.isbn,
             status=book.status,
             created_at=book.created_at,
             updated_at=book.updated_at,
+            finished_reading_at=book.finished_reading_at,
         )
         self._session.add(model)
         await self._session.flush()
@@ -32,7 +35,7 @@ class SQLAlchemyBookRepository(BookRepository):
 
     async def get_by_id(self, book_id: UUID) -> Book | None:
         result = await self._session.execute(
-            select(BookModel).where(BookModel.id == book_id)
+            select(BookModel).options(selectinload(BookModel.sessions)).where(BookModel.id == book_id)
         )
         model = result.scalar_one_or_none()
         return self._to_entity(model) if model else None
@@ -51,8 +54,10 @@ class SQLAlchemyBookRepository(BookRepository):
         model.published_year = book.published_year
         model.total_pages = book.total_pages
         model.cover_url = book.cover_url
+        model.isbn = book.isbn
         model.status = book.status
         model.updated_at = book.updated_at
+        model.finished_reading_at = book.finished_reading_at
 
         await self._session.flush()
         return book
@@ -70,7 +75,7 @@ class SQLAlchemyBookRepository(BookRepository):
     async def list_by_user(
         self, user_id: UUID, limit: int, offset: int, status: BookStatus | None = None, search_query: str | None = None
     ) -> tuple[list[Book], int]:
-        query = select(BookModel).where(BookModel.user_id == user_id, BookModel.is_deleted == False)
+        query = select(BookModel).options(selectinload(BookModel.sessions)).where(BookModel.user_id == user_id, BookModel.is_deleted == False)
 
         if status:
             query = query.where(BookModel.status == status)
@@ -80,7 +85,8 @@ class SQLAlchemyBookRepository(BookRepository):
             query = query.where(
                 or_(
                     BookModel.title.ilike(search_term),
-                    BookModel.author.ilike(search_term)
+                    BookModel.author.ilike(search_term),
+                    BookModel.isbn.ilike(search_term)
                 )
             )
 
@@ -96,6 +102,18 @@ class SQLAlchemyBookRepository(BookRepository):
 
     @staticmethod
     def _to_entity(model: BookModel) -> Book:
+        current_page = 0
+        started_reading_at = None
+        total_reading_time = 0
+        
+        # If sessions are loaded
+        if hasattr(model, "sessions") and model.sessions:
+            current_page = max((s.ending_page or 0 for s in model.sessions), default=0)
+            total_reading_time = sum((s.minutes_read or 0 for s in model.sessions))
+            valid_sessions = [s for s in model.sessions if s.start_time]
+            if valid_sessions:
+                started_reading_at = min((s.start_time for s in valid_sessions))
+
         return Book(
             id=model.id,
             user_id=model.user_id,
@@ -105,7 +123,12 @@ class SQLAlchemyBookRepository(BookRepository):
             published_year=model.published_year,
             total_pages=model.total_pages,
             cover_url=model.cover_url,
+            isbn=model.isbn,
             status=model.status,
             created_at=model.created_at,
             updated_at=model.updated_at,
+            current_page=current_page,
+            started_reading_at=started_reading_at,
+            total_reading_time=total_reading_time,
+            finished_reading_at=model.finished_reading_at,
         )

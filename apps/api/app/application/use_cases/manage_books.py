@@ -70,8 +70,16 @@ class UpdateBook:
         if request.isbn is not None:
             book.isbn = request.isbn
         if request.status is not None:
+            if book.status == BookStatus.READ and request.status in (BookStatus.WANT_TO_READ, BookStatus.READING):
+                from app.shared.exceptions import ConflictError
+                raise ConflictError("Cannot revert a completed book to reading or want to read")
+
+            if request.status == BookStatus.READ and book.status != BookStatus.READ:
+                book.finished_reading_at = datetime.now(UTC)
+            elif request.status != BookStatus.READ:
+                book.finished_reading_at = None
+
             book.status = request.status
-            
         book.updated_at = datetime.now(UTC)
         
         updated_book = await self._book_repository.update(book)
