@@ -22,6 +22,7 @@ export const SessionPage = () => {
 
   // Form state for finishing
   const [currentPage, setCurrentPage] = useState<string>('');
+  const [sessionNotes, setSessionNotes] = useState<string>('');
 
   // Total pages modal state
   const [showTotalPagesModal, setShowTotalPagesModal] = useState(false);
@@ -30,7 +31,7 @@ export const SessionPage = () => {
 
   const [showDiscardModal, setShowDiscardModal] = useState(false);
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Determine if we have a session running for THIS book
   const isThisBookSession = activeSession && activeSession.book_id === bookId;
@@ -51,14 +52,14 @@ export const SessionPage = () => {
 
   useEffect(() => {
     if (isRunning) {
-      intervalRef.current = setInterval(() => {
+      timerRef.current = setInterval(() => {
         setSeconds((s) => s + 1);
       }, 1000);
-    } else if (intervalRef.current) {
-      clearInterval(intervalRef.current);
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current);
     }
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [isRunning]);
 
@@ -112,6 +113,7 @@ export const SessionPage = () => {
         data: { 
           starting_page: null,
           ending_page: parseInt(currentPage) || 0,
+          notes: sessionNotes.trim() || null,
         }
       });
       setIsFinished(false);
@@ -139,22 +141,35 @@ export const SessionPage = () => {
   }
 
   return (
-    <div className="flex min-h-full flex-col items-center justify-start pt-12 pb-24 max-w-2xl mx-auto px-4 relative">
+    <div className="flex min-h-full flex-col items-center justify-start pt-12 pb-24 max-w-6xl w-full mx-auto px-4 relative">
       {/* Top Header info */}
-      <div className="text-center mb-12">
-        <p className="text-xs font-bold tracking-widest text-[var(--color-on-surface-variant)] uppercase mb-2">
-          Currently Reading
-        </p>
-        <h1 className="text-3xl font-bold text-[var(--color-on-surface)]" style={{ fontFamily: 'Source Serif 4, Georgia, serif' }}>
-          {book.title}
-        </h1>
-        <p className="text-lg text-[var(--color-on-surface-variant)] mt-1">
-          {book.author}
-        </p>
+      <div className="w-full flex justify-center items-center gap-6 mb-12 p-2 md:p-6">
+        {book.cover_url ? (
+          <img src={book.cover_url} alt={book.title} className="w-20 md:w-24 object-cover rounded shadow-md" />
+        ) : (
+          <div className="w-20 h-28 md:w-24 md:h-36 bg-[var(--color-surface-container-highest)] rounded shadow-md flex items-center justify-center text-3xl">
+            📖
+          </div>
+        )}
+        <div className="text-left">
+          <p className="text-xs font-bold tracking-widest text-[var(--color-on-surface-variant)] uppercase mb-2">
+            Currently Reading
+          </p>
+          <h1 className="text-2xl md:text-4xl font-bold text-[#6B7D6A]" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
+            {book.title}
+          </h1>
+          <p className="text-base md:text-lg text-[var(--color-on-surface-variant)] mt-1">
+            {book.author}
+          </p>
+        </div>
       </div>
 
-      {/* Timer Circle */}
-      <div className="relative flex items-center justify-center mb-16">
+      {!isFinished && (
+        <div className={`w-full flex flex-col md:flex-row gap-12 lg:gap-24 items-center md:items-start ${(!isThisBookSession) ? 'justify-center' : 'justify-center'}`}>
+          {/* Left Column: Timer & Controls */}
+          <div className="flex flex-col items-center flex-shrink-0 w-full md:w-auto max-w-md">
+            {/* Timer Circle */}
+            <div className="relative flex items-center justify-center mb-12">
         {/* Outer subtle ring */}
         <div className="absolute w-72 h-72 rounded-full border-[1.5px] border-[var(--color-outline-variant)] opacity-50"></div>
         <div className="absolute w-64 h-64 rounded-full border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] shadow-sm"></div>
@@ -168,11 +183,10 @@ export const SessionPage = () => {
             {isRunning ? 'Session Active' : (activeSession ? 'Session Paused' : 'Ready to Start')}
           </div>
         </div>
-      </div>
+            </div>
 
-      {/* Controls */}
-      {!isFinished && (
-        <div className="flex items-center gap-4">
+            {/* Controls */}
+            <div className="flex items-center gap-4">
           {!isThisBookSession && (
             <Button onClick={handleStart} size="lg" className="px-8 bg-[var(--color-primary)] text-white hover:bg-[#5d7362] transition-colors rounded-full font-semibold">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2">
@@ -214,6 +228,40 @@ export const SessionPage = () => {
                 Descartar
               </Button>
             </>
+          )}
+            </div>
+
+            {book.total_pages && book.total_pages > 0 && (
+              <div className="mt-12 text-center w-full">
+                <p className="text-xs font-bold tracking-widest text-[var(--color-on-surface-variant)] uppercase mb-3">
+                  Today's Progress
+                </p>
+                <div className="w-full h-1.5 bg-[var(--color-surface-container-highest)] rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-[var(--color-primary)] transition-all duration-1000 ease-out" 
+                    style={{ width: `${(book.current_page / book.total_pages) * 100}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-[var(--color-on-surface-variant)] mt-2 font-medium">
+                  {book.current_page} / {book.total_pages} pages
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Session Notes Area */}
+          {isThisBookSession && (
+            <div className="w-full flex-1 max-w-2xl animate-in fade-in slide-in-from-right-4">
+              <label className="block text-sm font-bold tracking-widest text-[var(--color-on-surface-variant)] uppercase mb-4">
+                Anotações da Sessão
+              </label>
+              <textarea
+                value={sessionNotes}
+                onChange={(e) => setSessionNotes(e.target.value)}
+                placeholder="Escreva seus pensamentos, reflexões ou citações enquanto lê..."
+                className="w-full h-[400px] bg-white border border-[var(--color-outline-variant)] rounded-2xl p-6 text-[var(--color-on-surface)] placeholder:text-[var(--color-outline)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] transition-all resize-none shadow-sm leading-relaxed"
+              />
+            </div>
           )}
         </div>
       )}
@@ -363,22 +411,8 @@ export const SessionPage = () => {
         </div>
       )}
 
-      {book.total_pages && book.total_pages > 0 && !isFinished && (
-        <div className="mt-16 text-center">
-          <p className="text-xs font-bold tracking-widest text-[var(--color-on-surface-variant)] uppercase mb-3">
-            Today's Progress
-          </p>
-          <div className="w-full max-w-sm mx-auto h-1.5 bg-[var(--color-surface-container-highest)] rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-[var(--color-primary)] transition-all duration-1000 ease-out" 
-              style={{ width: `${(book.current_page / book.total_pages) * 100}%` }}
-            ></div>
-          </div>
-          <p className="text-xs text-[var(--color-on-surface-variant)] mt-2 font-medium">
-            {book.current_page} / {book.total_pages} pages
-          </p>
-        </div>
-      )}
+      {/* Bottom padding for form */}
+      <div className="pb-12"></div>
     </div>
   );
 };

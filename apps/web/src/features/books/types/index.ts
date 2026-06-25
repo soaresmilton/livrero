@@ -17,6 +17,8 @@ export interface Book {
   started_reading_at?: string | null;
   total_reading_time: number;
   finished_reading_at?: string | null;
+  genres: string[];
+  rating?: number | null;
 }
 
 export interface PaginatedBookResponse {

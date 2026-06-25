@@ -9,6 +9,8 @@ import { MainLayout } from '@/components/layout/MainLayout'
 import { LibraryPage } from '@/pages/LibraryPage'
 import { SessionPage } from '@/pages/SessionPage'
 import { SessionsIndexPage } from '@/pages/SessionsIndexPage'
+import { NotesDashboardPage } from '@/pages/NotesDashboardPage'
+import { BookNotesPage } from '@/pages/BookNotesPage'
 
 const router = createBrowserRouter([
   // Public routes
@@ -28,6 +30,8 @@ const router = createBrowserRouter([
           { path: '/library', element: <LibraryPage /> },
           { path: '/sessions', element: <SessionsIndexPage /> },
           { path: '/sessions/:id', element: <SessionPage /> },
+          { path: '/notes', element: <NotesDashboardPage /> },
+          { path: '/library/:bookId/notes', element: <BookNotesPage /> },
           { path: '/', element: <DashboardPage /> },
         ]
       }

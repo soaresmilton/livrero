@@ -8,6 +8,7 @@ from app.infrastructure.persistence.models.token_model import (  # noqa: F401
     RefreshTokenModel,
 )
 from app.infrastructure.persistence.models.user_model import UserModel  # noqa: F401
+from app.infrastructure.persistence.models.reading_note_model import ReadingNoteModel  # noqa: F401
 
 __all__ = [
     "UserModel",
@@ -15,4 +16,5 @@ __all__ = [
     "PasswordResetTokenModel",
     "BookModel",
     "ReadingSessionModel",
+    "ReadingNoteModel",
 ]

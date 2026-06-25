@@ -25,6 +25,8 @@ class SQLAlchemyBookRepository(BookRepository):
             cover_url=book.cover_url,
             isbn=book.isbn,
             status=book.status,
+            genres=book.genres,
+            rating=book.rating,
             created_at=book.created_at,
             updated_at=book.updated_at,
             finished_reading_at=book.finished_reading_at,
@@ -58,6 +60,8 @@ class SQLAlchemyBookRepository(BookRepository):
         model.cover_url = book.cover_url
         model.isbn = book.isbn
         model.status = book.status
+        model.genres = book.genres
+        model.rating = book.rating
         model.updated_at = book.updated_at
         model.finished_reading_at = book.finished_reading_at
 
@@ -136,6 +140,8 @@ class SQLAlchemyBookRepository(BookRepository):
             cover_url=model.cover_url,
             isbn=model.isbn,
             status=model.status,
+            genres=model.genres,
+            rating=model.rating,
             created_at=model.created_at,
             updated_at=model.updated_at,
             current_page=current_page,

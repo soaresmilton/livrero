@@ -15,6 +15,8 @@ class CreateBookRequest(BaseModel):
     cover_url: str | None = Field(None, max_length=1024)
     status: BookStatus = Field(default=BookStatus.WANT_TO_READ)
     isbn: str | None = Field(None, max_length=13)
+    genres: list[str] | None = Field(default_factory=list)
+    rating: float | None = Field(None, ge=0, le=5)
 
 
 class UpdateBookRequest(BaseModel):
@@ -26,6 +28,8 @@ class UpdateBookRequest(BaseModel):
     cover_url: str | None = Field(None, max_length=1024)
     status: BookStatus | None = Field(None)
     isbn: str | None = Field(None, max_length=13)
+    genres: list[str] | None = Field(None)
+    rating: float | None = Field(None, ge=0, le=5)
 
 
 class BookResponse(BaseModel):
@@ -45,6 +49,8 @@ class BookResponse(BaseModel):
     started_reading_at: datetime | None = None
     total_reading_time: int = 0
     finished_reading_at: datetime | None = None
+    genres: list[str] | None = Field(default_factory=list)
+    rating: float | None = None
 
     class Config:
         from_attributes = True

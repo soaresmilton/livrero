@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Star, Tag } from 'lucide-react';
 import type { Book } from '../types';
 import type { VisibleProperties } from './PropertyVisibilityToggle';
 import { MarkAsReadModal } from './MarkAsReadModal';
@@ -66,7 +67,10 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
   };
 
   return (
-    <div className="group relative flex flex-col rounded-xl border border-[var(--color-outline-variant)] bg-[#ffffff] shadow-sm transition-all hover:shadow-md hover:-translate-y-1 h-full">
+    <div 
+      className="group relative flex flex-col rounded-xl border border-[var(--color-outline-variant)] bg-[#ffffff] shadow-sm transition-all hover:shadow-md hover:-translate-y-1 h-full cursor-pointer"
+      onClick={() => navigate(`/library/${book.id}/notes`)}
+    >
       {(!visibleProperties || visibleProperties.cover) && (
         <div className="aspect-[2/3] w-full overflow-hidden bg-neutral-100 dark:bg-neutral-800 relative rounded-t-[11px]">
           {book.cover_url ? (
@@ -216,7 +220,22 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
         )}
 
         {/* Informações Extras (Editora, Ano, Páginas) */}
-        <div className="mt-2 flex flex-col gap-0.5">
+        <div className="mt-2 flex flex-col gap-1">
+          {visibleProperties?.genres && book.genres && book.genres.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1 mb-1">
+              {book.genres.map(g => (
+                <span key={g} className="px-1.5 py-0.5 bg-[#d4e8d1] text-[#1e311e] text-[10px] rounded-full">
+                  {g}
+                </span>
+              ))}
+            </div>
+          )}
+          {visibleProperties?.rating && book.rating && (
+            <p className="text-xs text-[var(--color-on-surface-variant)] flex items-center gap-1 font-medium">
+              <Star size={12} className="text-orange-500 fill-orange-500" />
+              {book.rating.toFixed(1)}
+            </p>
+          )}
           {visibleProperties?.publisher && book.publisher && (
             <p className="text-xs text-[var(--color-on-surface-variant)] flex items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

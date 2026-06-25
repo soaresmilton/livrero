@@ -29,5 +29,7 @@ class Book:
     total_pages: int | None = None
     cover_url: str | None = None
     isbn: str | None = None
+    genres: list[str] | None = None
+    rating: float | None = None
     is_deleted: bool = False
     deleted_at: datetime | None = None

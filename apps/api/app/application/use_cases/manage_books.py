@@ -32,6 +32,8 @@ class AddBook:
             cover_url=request.cover_url,
             isbn=request.isbn,
             status=request.status,
+            genres=request.genres,
+            rating=request.rating,
             created_at=now,
             updated_at=now,
         )
@@ -71,6 +73,10 @@ class UpdateBook:
             book.cover_url = request.cover_url
         if request.isbn is not None:
             book.isbn = request.isbn
+        if request.genres is not None:
+            book.genres = request.genres
+        if request.rating is not None:
+            book.rating = request.rating
         if request.status is not None:
             if book.status == BookStatus.READ and request.status in (
                 BookStatus.WANT_TO_READ,

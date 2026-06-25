@@ -45,3 +45,11 @@ def get_book_repository(session: AsyncSession = Depends(get_session)) -> BookRep
 
 def get_open_library() -> OpenLibraryIntegration:
     return OpenLibraryIntegration()
+
+
+def get_note_repository(session: AsyncSession = Depends(get_session)):
+    from app.infrastructure.persistence.repositories.reading_note_repository import (
+        SQLAlchemyReadingNoteRepository,
+    )
+
+    return SQLAlchemyReadingNoteRepository(session)

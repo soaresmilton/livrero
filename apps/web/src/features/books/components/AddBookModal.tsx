@@ -4,6 +4,13 @@ import { useAddBook, useUpdateBook } from '../hooks/useBooks';
 import { Button } from '@/components/ui/Button';
 import type { Book, BookStatus, BookSearchResult } from '../types';
 
+const DEFAULT_GENRES = [
+  'Romance', 'Ficção Científica', 'Fantasia', 'Mistério', 'Thriller',
+  'Terror', 'Biografia', 'História', 'Filosofia', 'Autoajuda',
+  'Negócios', 'Poesia', 'Infantil', 'Jovem Adulto', 'Religião',
+  'Ciência', 'Psicologia', 'Arte', 'Arquitetura', 'Tecnologia'
+];
+
 interface AddBookModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -23,6 +30,8 @@ export const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, ini
   const [coverUrl, setCoverUrl] = useState('');
   const [isbn, setIsbn] = useState('');
   const [status, setStatus] = useState<BookStatus>('WANT_TO_READ');
+  const [genres, setGenres] = useState<string[]>([]);
+  const [rating, setRating] = useState<number | ''>('');
 
   const { data: searchResults, isLoading: isSearchLoading } = useBookSearch(searchQuery);
   const addBookMutation = useAddBook();
@@ -41,6 +50,8 @@ export const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, ini
       setCoverUrl(initialData.cover_url || '');
       setIsbn(initialData.isbn || '');
       setStatus(initialData.status || 'WANT_TO_READ');
+      setGenres(initialData.genres || []);
+      setRating(initialData.rating ?? '');
       setActiveTab('MANUAL');
     } else {
       resetForm();
@@ -56,6 +67,8 @@ export const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, ini
     setCoverUrl('');
     setIsbn('');
     setStatus('WANT_TO_READ');
+    setGenres([]);
+    setRating('');
     setSearchQuery('');
   };
 
@@ -102,6 +115,8 @@ export const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, ini
       cover_url: coverUrl || null,
       isbn: isbn || null,
       status,
+      genres,
+      rating: rating !== '' ? Number(rating) : null,
     };
 
     if (initialData) {
@@ -322,6 +337,64 @@ export const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, ini
                   <option value="READ">Lido</option>
                   <option value="ABANDONED">Abandonado</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-on-surface-variant)' }}>Avaliação (0 a 5)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="5"
+                  step="0.1"
+                  value={rating}
+                  onChange={(e) => setRating(e.target.value ? Number(e.target.value) : '')}
+                  className="w-full rounded-lg border px-4 py-2 text-sm focus:outline-none focus:ring-1"
+                  style={{ backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)', color: 'var(--color-on-surface)' }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--color-on-surface-variant)' }}>Gêneros / Tags</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {genres.map(g => (
+                    <span key={g} className="px-2 py-1 bg-[#d4e8d1] text-[#1e311e] text-xs rounded-full flex items-center gap-1 border border-[#b8ccb6]">
+                      {g}
+                      <button type="button" onClick={() => setGenres(genres.filter(x => x !== g))} className="text-red-600 hover:text-red-800 ml-1">×</button>
+                    </span>
+                  ))}
+                </div>
+                <select
+                  value=""
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val && !genres.includes(val)) {
+                      setGenres([...genres, val]);
+                    }
+                  }}
+                  className="w-full rounded-lg border px-4 py-2 text-sm focus:outline-none focus:ring-1 mb-2"
+                  style={{ backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)', color: 'var(--color-on-surface)' }}
+                >
+                  <option value="" disabled>Selecione um gênero da lista...</option>
+                  {DEFAULT_GENRES.filter(g => !genres.includes(g)).map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  placeholder="Ou digite um novo gênero e pressione Enter"
+                  className="w-full rounded-lg border px-4 py-2 text-sm focus:outline-none focus:ring-1"
+                  style={{ backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)', color: 'var(--color-on-surface)' }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      const val = e.currentTarget.value.trim();
+                      if (val && !genres.includes(val)) {
+                        setGenres([...genres, val]);
+                      }
+                      e.currentTarget.value = '';
+                    }
+                  }}
+                />
               </div>
 
               <div>
