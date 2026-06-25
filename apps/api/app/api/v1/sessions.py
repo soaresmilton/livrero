@@ -11,6 +11,7 @@ from app.application.dto.reading_session_dto import (
     PaginatedReadingSessionResponse,
     ReadingSessionResponse,
     StartSessionRequest,
+    UpdateSessionNotesRequest,
 )
 from app.application.use_cases.manage_sessions import ManageSessionsUseCase
 from app.domain.entities.user import User
@@ -98,3 +99,15 @@ async def list_book_sessions(
         size=size,
         pages=pages,
     )
+
+
+@router.patch("/{session_id}/notes", response_model=ReadingSessionResponse)
+async def update_session_notes(
+    session_id: UUID,
+    request: UpdateSessionNotesRequest,
+    user: Annotated[User, Depends(get_current_user)],
+    use_case: Annotated[ManageSessionsUseCase, Depends(get_manage_sessions_use_case)],
+):
+    """Update notes of an existing reading session."""
+    session = await use_case.update_session_notes(user.id, session_id, request)
+    return ReadingSessionResponse.model_validate(session)

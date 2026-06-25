@@ -14,6 +14,10 @@ class EndSessionRequest(BaseModel):
     notes: str | None = None
 
 
+class UpdateSessionNotesRequest(BaseModel):
+    notes: str | None = None
+
+
 class ReadingSessionResponse(BaseModel):
     id: UUID
     user_id: UUID

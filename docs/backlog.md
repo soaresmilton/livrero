@@ -33,3 +33,5 @@
     - Duração
     - Número de Páginas Lidas
     
+### Marcar como concluído
+- **Descrição**: Quando o usuário selecionar a opção "Marcar como Lido", no modal de confirmação, disponibilizar para ele a nota de avaliação.

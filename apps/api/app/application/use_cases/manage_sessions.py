@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from app.application.dto.reading_session_dto import (
     EndSessionRequest,
     StartSessionRequest,
+    UpdateSessionNotesRequest,
 )
 from app.domain.entities.reading_session import ReadingSession
 from app.domain.repositories.book_repository import BookRepository
@@ -102,3 +103,14 @@ class ManageSessionsUseCase:
 
         offset = (page - 1) * size
         return await self._session_repo.list_by_book(book_id, limit=size, offset=offset)
+
+    async def update_session_notes(
+        self, user_id: uuid.UUID, session_id: uuid.UUID, request: UpdateSessionNotesRequest
+    ) -> ReadingSession:
+        session = await self._session_repo.get_by_id(session_id)
+        if not session or session.user_id != user_id:
+            raise NotFoundError("Reading session not found")
+
+        session.notes = request.notes
+        session.updated_at = datetime.now(UTC)
+        return await self._session_repo.update(session)

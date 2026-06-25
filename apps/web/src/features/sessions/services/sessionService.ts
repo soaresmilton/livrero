@@ -27,4 +27,9 @@ export const sessionService = {
     });
     return response.data;
   },
+
+  updateSessionNotes: async (sessionId: string, notes: string | null): Promise<ReadingSession> => {
+    const response = await api.patch<ReadingSession>(`/sessions/${sessionId}/notes`, { notes });
+    return response.data;
+  },
 };

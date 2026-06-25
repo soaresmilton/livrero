@@ -63,3 +63,15 @@ export function useDiscardSession() {
     },
   });
 }
+
+export function useUpdateSessionNotes(bookId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ sessionId, notes }: { sessionId: string; notes: string | null }) =>
+      sessionService.updateSessionNotes(sessionId, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: sessionKeys.book(bookId) });
+    },
+  });
+}
