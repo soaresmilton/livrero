@@ -5,6 +5,8 @@ import { RegisterPage } from '@/pages/RegisterPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '@/pages/ResetPasswordPage'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { MainLayout } from '@/components/layout/MainLayout'
+import { LibraryPage } from '@/pages/LibraryPage'
 
 const router = createBrowserRouter([
   // Public routes
@@ -17,8 +19,14 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
-      { path: '/dashboard', element: <DashboardPage /> },
-      { path: '/', element: <DashboardPage /> },
+      {
+        element: <MainLayout />,
+        children: [
+          { path: '/dashboard', element: <DashboardPage /> },
+          { path: '/library', element: <LibraryPage /> },
+          { path: '/', element: <DashboardPage /> },
+        ]
+      }
     ],
   },
 ])

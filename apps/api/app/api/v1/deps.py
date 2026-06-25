@@ -5,7 +5,12 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities.user import User
+from app.domain.repositories.book_repository import BookRepository
+from app.infrastructure.integrations.open_library import OpenLibraryIntegration
 from app.infrastructure.persistence.database import get_session
+from app.infrastructure.persistence.repositories.book_repository import (
+    SQLAlchemyBookRepository,
+)
 from app.infrastructure.persistence.repositories.user_repository import (
     SQLAlchemyUserRepository,
 )
@@ -32,3 +37,11 @@ async def get_current_user(
         raise unauthorized("User not found")
 
     return user
+
+
+def get_book_repository(session: AsyncSession = Depends(get_session)) -> BookRepository:
+    return SQLAlchemyBookRepository(session)
+
+
+def get_open_library() -> OpenLibraryIntegration:
+    return OpenLibraryIntegration()

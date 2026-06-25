@@ -1,0 +1,111 @@
+from uuid import UUID
+
+from sqlalchemy import func, select, or_
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.domain.entities.book import Book, BookStatus
+from app.domain.repositories.book_repository import BookRepository
+from app.infrastructure.persistence.models.book_model import BookModel
+
+
+class SQLAlchemyBookRepository(BookRepository):
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def create(self, book: Book) -> Book:
+        model = BookModel(
+            id=book.id,
+            user_id=book.user_id,
+            title=book.title,
+            author=book.author,
+            publisher=book.publisher,
+            published_year=book.published_year,
+            total_pages=book.total_pages,
+            cover_url=book.cover_url,
+            status=book.status,
+            created_at=book.created_at,
+            updated_at=book.updated_at,
+        )
+        self._session.add(model)
+        await self._session.flush()
+        return book
+
+    async def get_by_id(self, book_id: UUID) -> Book | None:
+        result = await self._session.execute(
+            select(BookModel).where(BookModel.id == book_id)
+        )
+        model = result.scalar_one_or_none()
+        return self._to_entity(model) if model else None
+
+    async def update(self, book: Book) -> Book:
+        result = await self._session.execute(
+            select(BookModel).where(BookModel.id == book.id)
+        )
+        model = result.scalar_one_or_none()
+        if not model:
+            raise ValueError(f"Book {book.id} not found")
+
+        model.title = book.title
+        model.author = book.author
+        model.publisher = book.publisher
+        model.published_year = book.published_year
+        model.total_pages = book.total_pages
+        model.cover_url = book.cover_url
+        model.status = book.status
+        model.updated_at = book.updated_at
+
+        await self._session.flush()
+        return book
+
+    async def delete(self, book_id: UUID) -> None:
+        result = await self._session.execute(
+            select(BookModel).where(BookModel.id == book_id)
+        )
+        model = result.scalar_one_or_none()
+        if model:
+            model.is_deleted = True
+            model.deleted_at = func.now()
+            await self._session.flush()
+
+    async def list_by_user(
+        self, user_id: UUID, limit: int, offset: int, status: BookStatus | None = None, search_query: str | None = None
+    ) -> tuple[list[Book], int]:
+        query = select(BookModel).where(BookModel.user_id == user_id, BookModel.is_deleted == False)
+
+        if status:
+            query = query.where(BookModel.status == status)
+
+        if search_query:
+            search_term = f"%{search_query}%"
+            query = query.where(
+                or_(
+                    BookModel.title.ilike(search_term),
+                    BookModel.author.ilike(search_term)
+                )
+            )
+
+        count_query = select(func.count()).select_from(query.subquery())
+        total_result = await self._session.execute(count_query)
+        total = total_result.scalar_one()
+
+        query = query.order_by(BookModel.created_at.desc()).limit(limit).offset(offset)
+        result = await self._session.execute(query)
+        models = result.scalars().all()
+
+        return [self._to_entity(model) for model in models], total
+
+    @staticmethod
+    def _to_entity(model: BookModel) -> Book:
+        return Book(
+            id=model.id,
+            user_id=model.user_id,
+            title=model.title,
+            author=model.author,
+            publisher=model.publisher,
+            published_year=model.published_year,
+            total_pages=model.total_pages,
+            cover_url=model.cover_url,
+            status=model.status,
+            created_at=model.created_at,
+            updated_at=model.updated_at,
+        )
