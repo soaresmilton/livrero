@@ -55,7 +55,7 @@ export function useDiscardSession() {
 
   return useMutation({
     mutationFn: (sessionId: string) => sessionService.discardSession(sessionId),
-    onSuccess: (_, sessionId) => {
+    onSuccess: () => {
       queryClient.setQueryData(sessionKeys.active(), null);
       // We don't have the book_id easily here without passing it, but we can invalidate all books/sessions
       queryClient.invalidateQueries({ queryKey: sessionKeys.all });

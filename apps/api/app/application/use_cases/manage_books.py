@@ -4,9 +4,9 @@ from datetime import UTC, datetime
 from app.application.dto.book_dto import (
     BookResponse,
     CreateBookRequest,
-    UpdateBookRequest,
     OpenLibraryBookResponse,
     PaginatedBookResponse,
+    UpdateBookRequest,
 )
 from app.domain.entities.book import Book, BookStatus
 from app.domain.repositories.book_repository import BookRepository
@@ -49,10 +49,12 @@ class UpdateBook:
         book = await self._book_repository.get_by_id(book_id)
         if not book:
             from app.shared.exceptions import not_found
+
             raise not_found("Book not found")
-            
+
         if book.user_id != user_id:
             from app.shared.exceptions import forbidden
+
             raise forbidden("You don't have permission to update this book")
 
         if request.title is not None:
@@ -70,9 +72,15 @@ class UpdateBook:
         if request.isbn is not None:
             book.isbn = request.isbn
         if request.status is not None:
-            if book.status == BookStatus.READ and request.status in (BookStatus.WANT_TO_READ, BookStatus.READING):
+            if book.status == BookStatus.READ and request.status in (
+                BookStatus.WANT_TO_READ,
+                BookStatus.READING,
+            ):
                 from app.shared.exceptions import ConflictError
-                raise ConflictError("Cannot revert a completed book to reading or want to read")
+
+                raise ConflictError(
+                    "Cannot revert a completed book to reading or want to read"
+                )
 
             if request.status == BookStatus.READ and book.status != BookStatus.READ:
                 book.finished_reading_at = datetime.now(UTC)
@@ -81,7 +89,7 @@ class UpdateBook:
 
             book.status = request.status
         book.updated_at = datetime.now(UTC)
-        
+
         updated_book = await self._book_repository.update(book)
         return BookResponse.model_validate(updated_book)
 
@@ -91,7 +99,12 @@ class ListUserBooks:
         self._book_repository = book_repository
 
     async def execute(
-        self, user_id: uuid.UUID, page: int, size: int, status: BookStatus | None = None, search_query: str | None = None
+        self,
+        user_id: uuid.UUID,
+        page: int,
+        size: int,
+        status: BookStatus | None = None,
+        search_query: str | None = None,
     ) -> PaginatedBookResponse:
         offset = (page - 1) * size
         books, total = await self._book_repository.list_by_user(
@@ -127,10 +140,12 @@ class RemoveBook:
         book = await self._book_repository.get_by_id(book_id)
         if not book:
             from app.shared.exceptions import not_found
+
             raise not_found("Book not found")
-            
+
         if book.user_id != user_id:
             from app.shared.exceptions import forbidden
+
             raise forbidden("You don't have permission to delete this book")
 
         await self._book_repository.delete(book_id)

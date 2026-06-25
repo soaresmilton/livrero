@@ -1,8 +1,8 @@
 from uuid import UUID
 
-from sqlalchemy import func, select, or_
-from sqlalchemy.orm import selectinload
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.domain.entities.book import Book, BookStatus
 from app.domain.repositories.book_repository import BookRepository
@@ -35,7 +35,9 @@ class SQLAlchemyBookRepository(BookRepository):
 
     async def get_by_id(self, book_id: UUID) -> Book | None:
         result = await self._session.execute(
-            select(BookModel).options(selectinload(BookModel.sessions)).where(BookModel.id == book_id)
+            select(BookModel)
+            .options(selectinload(BookModel.sessions))
+            .where(BookModel.id == book_id)
         )
         model = result.scalar_one_or_none()
         return self._to_entity(model) if model else None
@@ -73,9 +75,18 @@ class SQLAlchemyBookRepository(BookRepository):
             await self._session.flush()
 
     async def list_by_user(
-        self, user_id: UUID, limit: int, offset: int, status: BookStatus | None = None, search_query: str | None = None
+        self,
+        user_id: UUID,
+        limit: int,
+        offset: int,
+        status: BookStatus | None = None,
+        search_query: str | None = None,
     ) -> tuple[list[Book], int]:
-        query = select(BookModel).options(selectinload(BookModel.sessions)).where(BookModel.user_id == user_id, BookModel.is_deleted == False)
+        query = (
+            select(BookModel)
+            .options(selectinload(BookModel.sessions))
+            .where(BookModel.user_id == user_id, ~BookModel.is_deleted)
+        )
 
         if status:
             query = query.where(BookModel.status == status)
@@ -86,7 +97,7 @@ class SQLAlchemyBookRepository(BookRepository):
                 or_(
                     BookModel.title.ilike(search_term),
                     BookModel.author.ilike(search_term),
-                    BookModel.isbn.ilike(search_term)
+                    BookModel.isbn.ilike(search_term),
                 )
             )
 
@@ -105,14 +116,14 @@ class SQLAlchemyBookRepository(BookRepository):
         current_page = 0
         started_reading_at = None
         total_reading_time = 0
-        
+
         # If sessions are loaded
         if hasattr(model, "sessions") and model.sessions:
             current_page = max((s.ending_page or 0 for s in model.sessions), default=0)
-            total_reading_time = sum((s.minutes_read or 0 for s in model.sessions))
+            total_reading_time = sum(s.minutes_read or 0 for s in model.sessions)
             valid_sessions = [s for s in model.sessions if s.start_time]
             if valid_sessions:
-                started_reading_at = min((s.start_time for s in valid_sessions))
+                started_reading_at = min(s.start_time for s in valid_sessions)
 
         return Book(
             id=model.id,

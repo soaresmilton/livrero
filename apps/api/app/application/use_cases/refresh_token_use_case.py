@@ -22,7 +22,14 @@ class RefreshTokenUseCase:
         token = await self._tokens.find_by_hash(token_hash)
 
         now = datetime.now(UTC)
-        if not token or token.revoked_at is not None or token.expires_at < now:
+        if not token or token.revoked_at is not None:
+            raise UnauthorizedError("Invalid or expired refresh token")
+
+        expires_at = token.expires_at
+        if expires_at and expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=UTC)
+
+        if expires_at < now:
             raise UnauthorizedError("Invalid or expired refresh token")
 
         await self._tokens.revoke(token.id)

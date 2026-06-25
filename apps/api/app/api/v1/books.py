@@ -4,16 +4,16 @@ from app.api.v1.deps import get_book_repository, get_current_user, get_open_libr
 from app.application.dto.book_dto import (
     BookResponse,
     CreateBookRequest,
-    UpdateBookRequest,
     OpenLibraryBookResponse,
     PaginatedBookResponse,
+    UpdateBookRequest,
 )
 from app.application.use_cases.manage_books import (
     AddBook,
-    UpdateBook,
     ListUserBooks,
-    SearchOpenLibrary,
     RemoveBook,
+    SearchOpenLibrary,
+    UpdateBook,
 )
 from app.domain.entities.book import BookStatus
 from app.domain.entities.user import User
@@ -41,12 +41,14 @@ async def update_book(
     repo: BookRepository = Depends(get_book_repository),
 ) -> BookResponse:
     import uuid
+
     try:
         parsed_uuid = uuid.UUID(book_id)
-    except ValueError:
+    except ValueError as e:
         from app.shared.exceptions import bad_request
-        raise bad_request("Invalid book ID format")
-        
+
+        raise bad_request("Invalid book ID format") from e
+
     use_case = UpdateBook(repo)
     return await use_case.execute(user.id, parsed_uuid, request)
 
@@ -68,17 +70,20 @@ async def get_book(
     repo: BookRepository = Depends(get_book_repository),
 ) -> BookResponse:
     import uuid
+
     try:
         parsed_uuid = uuid.UUID(book_id)
-    except ValueError:
+    except ValueError as e:
         from app.shared.exceptions import bad_request
-        raise bad_request("Invalid book ID format")
-        
+
+        raise bad_request("Invalid book ID format") from e
+
     book = await repo.get_by_id(parsed_uuid)
     from app.shared.exceptions import not_found
+
     if not book or book.user_id != user.id or book.is_deleted:
         raise not_found("Book not found")
-        
+
     return BookResponse.model_validate(book)
 
 
@@ -89,12 +94,14 @@ async def delete_book(
     repo: BookRepository = Depends(get_book_repository),
 ) -> None:
     import uuid
+
     try:
         parsed_uuid = uuid.UUID(book_id)
-    except ValueError:
+    except ValueError as e:
         from app.shared.exceptions import bad_request
-        raise bad_request("Invalid book ID format")
-        
+
+        raise bad_request("Invalid book ID format") from e
+
     use_case = RemoveBook(repo)
     await use_case.execute(user.id, parsed_uuid)
 

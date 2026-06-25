@@ -1,7 +1,10 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from app.application.dto.reading_session_dto import EndSessionRequest, StartSessionRequest
+from app.application.dto.reading_session_dto import (
+    EndSessionRequest,
+    StartSessionRequest,
+)
 from app.domain.entities.reading_session import ReadingSession
 from app.domain.repositories.book_repository import BookRepository
 from app.domain.repositories.reading_session_repository import ReadingSessionRepository
@@ -17,7 +20,9 @@ class ManageSessionsUseCase:
         self._session_repo = session_repo
         self._book_repo = book_repo
 
-    async def start_session(self, user_id: uuid.UUID, request: StartSessionRequest) -> ReadingSession:
+    async def start_session(
+        self, user_id: uuid.UUID, request: StartSessionRequest
+    ) -> ReadingSession:
         # 1. Check if user already has an active session
         active = await self._session_repo.get_active_session(user_id)
         if active:
@@ -28,8 +33,8 @@ class ManageSessionsUseCase:
         if not book or book.user_id != user_id or book.is_deleted:
             raise NotFoundError("Book not found")
 
-        now = datetime.now(timezone.utc)
-        
+        now = datetime.now(UTC)
+
         session = ReadingSession(
             id=uuid.uuid4(),
             user_id=user_id,
@@ -40,6 +45,7 @@ class ManageSessionsUseCase:
         )
 
         from app.domain.entities.book import BookStatus
+
         if book.status == BookStatus.WANT_TO_READ:
             book.status = BookStatus.READING
             book.updated_at = now
@@ -47,19 +53,24 @@ class ManageSessionsUseCase:
 
         return await self._session_repo.create(session)
 
-    async def end_session(self, user_id: uuid.UUID, session_id: uuid.UUID, request: EndSessionRequest) -> ReadingSession:
+    async def end_session(
+        self, user_id: uuid.UUID, session_id: uuid.UUID, request: EndSessionRequest
+    ) -> ReadingSession:
         session = await self._session_repo.get_by_id(session_id)
-        
+
         if not session or session.user_id != user_id:
             raise NotFoundError("Reading session not found")
-            
+
         if session.end_time is not None:
             raise ConflictError("Session is already ended")
 
-        now = datetime.now(timezone.utc)
-        
+        now = datetime.now(UTC)
+        start_time = session.start_time
+        if start_time.tzinfo is None:
+            start_time = start_time.replace(tzinfo=UTC)
+
         # Calculate minutes read
-        delta = now - session.start_time
+        delta = now - start_time
         minutes = int(delta.total_seconds() / 60)
 
         session.end_time = now
@@ -78,7 +89,7 @@ class ManageSessionsUseCase:
         session = await self._session_repo.get_by_id(session_id)
         if not session or session.user_id != user_id:
             raise NotFoundError("Reading session not found")
-        
+
         await self._session_repo.delete(session_id)
 
     async def list_book_sessions(

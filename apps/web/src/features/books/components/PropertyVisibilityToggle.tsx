@@ -11,6 +11,7 @@ export interface VisibleProperties {
   isbn: boolean;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const defaultVisibleProperties: VisibleProperties = {
   title: true,
   author: true,

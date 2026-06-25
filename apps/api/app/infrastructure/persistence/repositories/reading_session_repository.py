@@ -5,7 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.entities.reading_session import ReadingSession
 from app.domain.repositories.reading_session_repository import ReadingSessionRepository
-from app.infrastructure.persistence.models.reading_session_model import ReadingSessionModel
+from app.infrastructure.persistence.models.reading_session_model import (
+    ReadingSessionModel,
+)
 
 
 class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
@@ -58,13 +60,19 @@ class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
     async def list_by_book(
         self, book_id: UUID, limit: int, offset: int
     ) -> tuple[list[ReadingSession], int]:
-        query = select(ReadingSessionModel).where(ReadingSessionModel.book_id == book_id)
+        query = select(ReadingSessionModel).where(
+            ReadingSessionModel.book_id == book_id
+        )
 
         count_query = select(func.count()).select_from(query.subquery())
         total_result = await self._session.execute(count_query)
         total = total_result.scalar_one()
 
-        query = query.order_by(ReadingSessionModel.created_at.desc()).limit(limit).offset(offset)
+        query = (
+            query.order_by(ReadingSessionModel.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
         result = await self._session.execute(query)
         models = result.scalars().all()
 
@@ -74,7 +82,7 @@ class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
         result = await self._session.execute(
             select(ReadingSessionModel).where(
                 ReadingSessionModel.user_id == user_id,
-                ReadingSessionModel.end_time.is_(None)
+                ReadingSessionModel.end_time.is_(None),
             )
         )
         model = result.scalar_one_or_none()

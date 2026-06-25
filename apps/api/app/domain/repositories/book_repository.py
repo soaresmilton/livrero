@@ -23,6 +23,11 @@ class BookRepository(ABC):
 
     @abstractmethod
     async def list_by_user(
-        self, user_id: UUID, limit: int, offset: int, status: BookStatus | None = None, search_query: str | None = None
+        self,
+        user_id: UUID,
+        limit: int,
+        offset: int,
+        status: BookStatus | None = None,
+        search_query: str | None = None,
     ) -> tuple[list[Book], int]:
         pass

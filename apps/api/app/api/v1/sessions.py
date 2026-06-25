@@ -26,7 +26,7 @@ router = APIRouter(prefix="/sessions", tags=["Sessions"])
 
 
 def get_manage_sessions_use_case(
-    session: Annotated[AsyncSession, Depends(get_session)]
+    session: Annotated[AsyncSession, Depends(get_session)],
 ) -> ManageSessionsUseCase:
     return ManageSessionsUseCase(
         session_repo=SQLAlchemyReadingSessionRepository(session),
@@ -34,7 +34,9 @@ def get_manage_sessions_use_case(
     )
 
 
-@router.post("", response_model=ReadingSessionResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "", response_model=ReadingSessionResponse, status_code=status.HTTP_201_CREATED
+)
 async def start_session(
     request: StartSessionRequest,
     user: Annotated[User, Depends(get_current_user)],
@@ -63,6 +65,7 @@ async def get_active_session(
     """Get the user's currently active reading session, if any."""
     return await use_case.get_active_session(user.id)
 
+
 @router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def discard_session(
     session_id: UUID,
@@ -89,10 +92,7 @@ async def list_book_sessions(
     pages = math.ceil(total / size) if total > 0 else 0
 
     return PaginatedReadingSessionResponse(
-        items=[
-            ReadingSessionResponse.model_validate(session)
-            for session in sessions
-        ],
+        items=[ReadingSessionResponse.model_validate(session) for session in sessions],
         total=total,
         page=page,
         size=size,

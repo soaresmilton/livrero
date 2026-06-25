@@ -8,9 +8,7 @@ from app.application.dto.book_dto import OpenLibraryBookResponse
 class OpenLibraryIntegration:
     BASE_URL = "https://openlibrary.org/search.json"
 
-    async def search(
-        self, query: str, limit: int = 5
-    ) -> list[OpenLibraryBookResponse]:
+    async def search(self, query: str, limit: int = 5) -> list[OpenLibraryBookResponse]:
         encoded_query = quote(query)
         url = f"{self.BASE_URL}?q={encoded_query}&limit={limit}"
 
@@ -56,7 +54,7 @@ class OpenLibraryIntegration:
                     published_year=published_year,
                     total_pages=total_pages,
                     isbn=isbn,
-                    cover_url=cover_url
+                    cover_url=cover_url,
                 )
             )
             if len(results) >= limit:
