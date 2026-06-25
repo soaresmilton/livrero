@@ -16,6 +16,8 @@ class ReadingNoteRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def list_recent(self, user_id: uuid.UUID, limit: int = 10) -> list[ReadingNote]:
+    async def list_recent(
+        self, user_id: uuid.UUID, limit: int = 10
+    ) -> list[ReadingNote]:
         """List recently updated notes for a user"""
         pass

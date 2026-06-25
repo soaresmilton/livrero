@@ -55,9 +55,6 @@ def session_repo():
     return MockReadingSessionRepository()
 
 
-
-
-
 @pytest.fixture
 def book_repo():
     return MockBookRepository()

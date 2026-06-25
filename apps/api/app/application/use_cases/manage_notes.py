@@ -55,5 +55,7 @@ class ManageNotesUseCase:
             )
         return note
 
-    async def list_recent(self, user_id: uuid.UUID, limit: int = 10) -> list[ReadingNote]:
+    async def list_recent(
+        self, user_id: uuid.UUID, limit: int = 10
+    ) -> list[ReadingNote]:
         return await self.note_repo.list_recent(user_id, limit)

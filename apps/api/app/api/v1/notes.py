@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query
 
 from app.api.v1.deps import get_current_user, get_note_repository
 from app.application.dto.reading_note_dto import ReadingNoteResponse

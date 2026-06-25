@@ -1,10 +1,9 @@
 from uuid import uuid4
-from datetime import UTC, datetime
+
 import pytest
 
 from app.application.use_cases.manage_notes import ManageNotesUseCase, SaveNoteRequest
 from app.domain.entities.reading_note import ReadingNote
-from app.shared.exceptions import UnauthorizedError
 
 
 class MockNoteRepository:
@@ -75,8 +74,9 @@ async def test_cannot_edit_others_note(note_repo):
 
     use_case = ManageNotesUseCase(note_repo)
     req = SaveNoteRequest(content_markdown="New")
-    
+
     from fastapi import HTTPException
+
     with pytest.raises(HTTPException):
         await use_case.save_note(user_id, book_id, req)
 

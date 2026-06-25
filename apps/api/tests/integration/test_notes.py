@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from uuid import uuid4
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -51,7 +52,9 @@ async def sample_note_data(db_session: AsyncSession):
 
 
 @pytest.mark.asyncio
-async def test_get_recent_notes(client: AsyncClient, db_session: AsyncSession, sample_note_data):
+async def test_get_recent_notes(
+    client: AsyncClient, db_session: AsyncSession, sample_note_data
+):
     user, book, note = sample_note_data
     token = create_access_token(str(user.id))
     headers = {"Authorization": f"Bearer {token}"}
@@ -64,7 +67,9 @@ async def test_get_recent_notes(client: AsyncClient, db_session: AsyncSession, s
 
 
 @pytest.mark.asyncio
-async def test_save_book_note(client: AsyncClient, db_session: AsyncSession, sample_note_data):
+async def test_save_book_note(
+    client: AsyncClient, db_session: AsyncSession, sample_note_data
+):
     user, book, note = sample_note_data
     token = create_access_token(str(user.id))
     headers = {"Authorization": f"Bearer {token}"}
@@ -73,7 +78,7 @@ async def test_save_book_note(client: AsyncClient, db_session: AsyncSession, sam
     res = await client.put(
         f"/api/v1/books/{book.id}/note",
         headers=headers,
-        json={"content_markdown": "Updated Content"}
+        json={"content_markdown": "Updated Content"},
     )
     assert res.status_code == 200
     data = res.json()
@@ -81,7 +86,9 @@ async def test_save_book_note(client: AsyncClient, db_session: AsyncSession, sam
 
 
 @pytest.mark.asyncio
-async def test_get_book_note(client: AsyncClient, db_session: AsyncSession, sample_note_data):
+async def test_get_book_note(
+    client: AsyncClient, db_session: AsyncSession, sample_note_data
+):
     user, book, note = sample_note_data
     token = create_access_token(str(user.id))
     headers = {"Authorization": f"Bearer {token}"}

@@ -201,3 +201,47 @@ test('BookCard without actions', async () => {
     expect(screen.queryByText('Editar')).not.toBeInTheDocument(); // Menu closed
   }
 });
+
+test('BookCard displays genres when visibleProperties.genres is true', () => {
+  const bookWithGenres = { ...mockBook, genres: ['Romance', 'Ficção'] };
+  renderWithRouter(
+    <BookCard {...defaultProps} book={bookWithGenres} visibleProperties={{ genres: true }} />
+  );
+  expect(screen.getByText('Romance')).toBeInTheDocument();
+  expect(screen.getByText('Ficção')).toBeInTheDocument();
+});
+
+test('BookCard displays rating when visibleProperties.rating is true', () => {
+  const bookWithRating = { ...mockBook, rating: 4.5 };
+  renderWithRouter(
+    <BookCard {...defaultProps} book={bookWithRating} visibleProperties={{ rating: true }} />
+  );
+  expect(screen.getByText('4.5')).toBeInTheDocument();
+});
+
+test('BookCard does not show genres section when genres array is empty', () => {
+  const bookNoGenres = { ...mockBook, genres: [] };
+  renderWithRouter(
+    <BookCard {...defaultProps} book={bookNoGenres} visibleProperties={{ genres: true }} />
+  );
+  // No genre pills
+  expect(screen.queryByText('Romance')).not.toBeInTheDocument();
+});
+
+test('BookCard READ status without finished_reading_at shows only start date', () => {
+  const readBook = {
+    ...mockBook,
+    status: 'READ' as BookStatus,
+    total_pages: 200,
+    current_page: 200,
+    started_reading_at: new Date('2024-06-01').toISOString(),
+    finished_reading_at: undefined,
+  };
+  renderWithRouter(<BookCard {...defaultProps} book={readBook} />);
+  expect(screen.getByText(/Início:/)).toBeInTheDocument();
+  expect(screen.queryByText(/Fim:/)).not.toBeInTheDocument();
+});
+
+// Note: The onConfirm callbacks inside MarkAsReadModal and AbandonModal that guard
+// against missing onStatusChange are annotated /* istanbul ignore next */ in the
+// source, so they are intentionally excluded from the coverage report.
