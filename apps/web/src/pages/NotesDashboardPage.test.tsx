@@ -7,6 +7,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { NotesDashboardPage } from './NotesDashboardPage';
 import { useRecentNotes } from '../hooks/useNotes';
 import { useBooks } from '../features/books/hooks/useBooks';
+import type { Book } from '../features/books/types';
 
 // ——— Mocks ——————————————————————————————————————————————————————————————————————
 
@@ -26,16 +27,16 @@ vi.mock('react-router-dom', async () => {
 
 // ——— Fixtures ———————————————————————————————————————————————————————————————————
 
-const makeBook = (overrides: Partial<ReturnType<typeof defaultBook>> = {}) =>
+const makeBook = (overrides: Partial<Book> = {}): Book =>
   ({ ...defaultBook(), ...overrides });
 
-function defaultBook() {
+function defaultBook(): Book {
   return {
     id: 'book-1',
     user_id: 'user-1',
     title: 'Dom Casmurro',
     author: 'Machado de Assis',
-    status: 'READING' as const,
+    status: 'READING',
     cover_url: null,
     current_page: 50,
     total_pages: 200,
