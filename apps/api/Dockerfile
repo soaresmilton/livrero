@@ -13,7 +13,7 @@ RUN pip install hatchling && \
     pip install fastapi uvicorn[standard] sqlalchemy[asyncio] asyncpg alembic \
     "pydantic[email]" pydantic-settings "python-jose[cryptography]" \
     "pwdlib[argon2,bcrypt]" python-multipart httpx && \
-    pip install pytest pytest-asyncio pytest-cov ruff
+    pip install pytest pytest-asyncio pytest-cov ruff aiosqlite
 
 # Copy application code
 COPY . .

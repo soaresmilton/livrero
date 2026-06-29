@@ -5,7 +5,7 @@ from app.application.dto.auth_dto import MessageResponse, ResetPasswordRequest
 from app.domain.repositories.token_repository import PasswordResetTokenRepository
 from app.domain.repositories.user_repository import UserRepository
 from app.infrastructure.security.password_service import hash_password
-from app.shared.exceptions import LivreroException
+from app.shared.exceptions import LivreroError
 
 
 class ResetPassword:
@@ -23,11 +23,11 @@ class ResetPassword:
 
         now = datetime.now(UTC)
         if not token or token.used_at is not None or token.expires_at < now:
-            raise LivreroException("Invalid or expired reset token")
+            raise LivreroError("Invalid or expired reset token")
 
         user = await self._users.find_by_id(token.user_id)
         if not user:
-            raise LivreroException("Invalid or expired reset token")
+            raise LivreroError("Invalid or expired reset token")
 
         user.password_hash = hash_password(request.new_password)
         user.updated_at = now
