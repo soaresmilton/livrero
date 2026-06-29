@@ -109,7 +109,7 @@ async def delete_book(
 @router.get("", response_model=PaginatedBookResponse)
 async def list_books(
     page: int = Query(1, ge=1),
-    size: int = Query(10, ge=1, le=100),
+    size: int = Query(10, ge=1, le=500),
     book_status: BookStatus | None = Query(None, alias="status"),
     q: str | None = Query(None, description="Search query for title or author"),
     user: User = Depends(get_current_user),

@@ -13,7 +13,7 @@ router = APIRouter(tags=["Notes"])
 
 @router.get("/notes/recent", response_model=list[ReadingNoteResponse])
 async def list_recent_notes(
-    limit: int = Query(10, ge=1, le=50),
+    limit: int = Query(10, ge=1, le=500),
     user: User = Depends(get_current_user),
     repo: ReadingNoteRepository = Depends(get_note_repository),
 ) -> list[ReadingNoteResponse]:
