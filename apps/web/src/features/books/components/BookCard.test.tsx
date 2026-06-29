@@ -34,7 +34,7 @@ beforeEach(() => {
 });
 
 test('BookCard renders book info correctly', () => {
-  renderWithRouter(<BookCard {...defaultProps} visibleProperties={{ title: true, author: true, total_pages: true }} />);
+  renderWithRouter(<BookCard {...defaultProps} visibleProperties={{ title: true, author: true, status: true, publisher: true, published_year: true, cover: true, total_pages: true, isbn: true, genres: true, rating: true }} />);
   expect(screen.getByText('A Test Book')).toBeInTheDocument();
   expect(screen.getByText('Author Name')).toBeInTheDocument();
   expect(screen.getByText(/300 págs/)).toBeInTheDocument();
@@ -205,7 +205,7 @@ test('BookCard without actions', async () => {
 test('BookCard displays genres when visibleProperties.genres is true', () => {
   const bookWithGenres = { ...mockBook, genres: ['Romance', 'Ficção'] };
   renderWithRouter(
-    <BookCard {...defaultProps} book={bookWithGenres} visibleProperties={{ genres: true }} />
+    <BookCard {...defaultProps} book={bookWithGenres} visibleProperties={{ title: true, author: true, status: true, publisher: true, published_year: true, cover: true, total_pages: true, isbn: true, genres: true, rating: true }} />
   );
   expect(screen.getByText('Romance')).toBeInTheDocument();
   expect(screen.getByText('Ficção')).toBeInTheDocument();
@@ -214,7 +214,7 @@ test('BookCard displays genres when visibleProperties.genres is true', () => {
 test('BookCard displays rating when visibleProperties.rating is true', () => {
   const bookWithRating = { ...mockBook, rating: 4.5 };
   renderWithRouter(
-    <BookCard {...defaultProps} book={bookWithRating} visibleProperties={{ rating: true }} />
+    <BookCard {...defaultProps} book={bookWithRating} visibleProperties={{ title: true, author: true, status: true, publisher: true, published_year: true, cover: true, total_pages: true, isbn: true, genres: true, rating: true }} />
   );
   expect(screen.getByText('4.5')).toBeInTheDocument();
 });
@@ -222,7 +222,7 @@ test('BookCard displays rating when visibleProperties.rating is true', () => {
 test('BookCard does not show genres section when genres array is empty', () => {
   const bookNoGenres = { ...mockBook, genres: [] };
   renderWithRouter(
-    <BookCard {...defaultProps} book={bookNoGenres} visibleProperties={{ genres: true }} />
+    <BookCard {...defaultProps} book={bookNoGenres} visibleProperties={{ title: true, author: true, status: true, publisher: true, published_year: true, cover: true, total_pages: true, isbn: true, genres: true, rating: true }} />
   );
   // No genre pills
   expect(screen.queryByText('Romance')).not.toBeInTheDocument();

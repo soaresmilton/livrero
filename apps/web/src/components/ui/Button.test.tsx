@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { Button } from './Button';
-import React from 'react';
 
 test('Button renders children correctly', () => {
   render(<Button>Click me</Button>);

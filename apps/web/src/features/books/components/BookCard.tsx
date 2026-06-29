@@ -289,7 +289,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                {formatReadingTime(book.total_reading_time)}
+                {formatReadingTime((book.total_reading_time || 0))}
               </p>
               <p className="text-[11px] text-[var(--color-on-surface-variant)] flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">

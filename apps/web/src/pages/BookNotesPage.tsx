@@ -177,12 +177,12 @@ export const BookNotesPage: React.FC = () => {
 
                   {/* Metrics row */}
                   <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
-                    {book.total_reading_time > 0 && (
+                    {(book.total_reading_time || 0) > 0 && (
                       <p className="text-[11px] text-gray-500 flex items-center gap-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        {formatTime(book.total_reading_time)}
+                        {formatTime((book.total_reading_time || 0))}
                       </p>
                     )}
                     {book.started_reading_at && (

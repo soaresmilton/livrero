@@ -31,6 +31,11 @@ export const bookService = {
     return response.data;
   },
 
+  async updateBookStatus(id: string, status: BookStatus): Promise<Book> {
+    const response = await api.patch(`/books/${id}/status`, { status });
+    return response.data;
+  },
+
   async deleteBook(id: string): Promise<void> {
     await api.delete(`/books/${id}`);
   },

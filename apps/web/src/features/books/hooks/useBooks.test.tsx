@@ -12,7 +12,7 @@ vi.mock('../services/bookService', () => ({
     createBook: vi.fn(),
     getBook: vi.fn(),
     updateBook: vi.fn(),
-    updateBookStatus: vi.fn(),
+  updateBookStatus: vi.fn(),
     deleteBook: vi.fn(),
   }
 }));
@@ -64,7 +64,7 @@ test('useBooks fetches books on mount', async () => {
   });
 
   expect(result.current.data?.items).toHaveLength(1);
-  expect(result.current.data?.items[0].title).toBe('Test Book');
+  expect(result.current.data?.items[0]?.title).toBe('Test Book');
 });
 
 test('useAddBook handles create book', async () => {

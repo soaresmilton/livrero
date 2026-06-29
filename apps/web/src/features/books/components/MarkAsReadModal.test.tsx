@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { MarkAsReadModal } from './MarkAsReadModal';
-import React from 'react';
 
 test('MarkAsReadModal renders correctly', () => {
   render(
@@ -59,7 +58,7 @@ test('MarkAsReadModal triggers onConfirm when Confirm is clicked', async () => {
     />
   );
   
-  await userEvent.click(screen.getAllByText('Marcar como Lido')[1]); // Click the button
+  await userEvent.click(screen.getAllByText('Marcar como Lido')[1]!); // Click the button
   expect(handleConfirm).toHaveBeenCalledTimes(1);
 });
 

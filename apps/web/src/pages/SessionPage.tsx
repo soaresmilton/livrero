@@ -66,7 +66,7 @@ export const SessionPage = () => {
   // Pre-fill current page with book's current page when opening the finish modal
   useEffect(() => {
     if (isFinished && book) {
-      const startP = book.current_page || 0;
+      const startP = (book?.current_page || 0) || 0;
       setCurrentPage(startP.toString());
     }
   }, [isFinished, book]);
@@ -239,11 +239,11 @@ export const SessionPage = () => {
                 <div className="w-full h-1.5 bg-[var(--color-surface-container-highest)] rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-[var(--color-primary)] transition-all duration-1000 ease-out" 
-                    style={{ width: `${(book.current_page / book.total_pages) * 100}%` }}
+                    style={{ width: `${((book?.current_page || 0) / book.total_pages) * 100}%` }}
                   ></div>
                 </div>
                 <p className="text-xs text-[var(--color-on-surface-variant)] mt-2 font-medium">
-                  {book.current_page} / {book.total_pages} pages
+                  {(book?.current_page || 0)} / {book.total_pages} pages
                 </p>
               </div>
             )}

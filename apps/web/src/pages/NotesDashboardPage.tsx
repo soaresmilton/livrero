@@ -9,7 +9,7 @@ import { useBooks } from '../features/books/hooks/useBooks';
 import type { Book } from '../features/books/types';
 import type { ReadingNote } from '../types/note';
 
-const STATUS_LABEL: Record<string, { label: string; color: string; bg: string }> = {
+const STATUS_LABEL: Record<Book['status'], { label: string; color: string; bg: string }> = {
   WANT_TO_READ: { label: 'Quero Ler',  color: '#854d0e', bg: '#fef9c3' },
   READING:      { label: 'Lendo',      color: '#065f46', bg: '#d1fae5' },
   READ:         { label: 'Lido',       color: '#1e3a5f', bg: '#dbeafe' },
