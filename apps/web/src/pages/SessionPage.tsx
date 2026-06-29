@@ -188,7 +188,7 @@ export const SessionPage = () => {
             {/* Controls */}
             <div className="flex items-center gap-4">
           {!isThisBookSession && (
-            <Button onClick={handleStart} size="lg" className="px-8 bg-[var(--color-primary)] text-white hover:bg-[#5d7362] transition-colors rounded-full font-semibold">
+            <Button onClick={handleStart} className="px-8 bg-[var(--color-primary)] text-white hover:bg-[#5d7362] transition-colors rounded-full font-semibold">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2">
                 <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
               </svg>
@@ -199,14 +199,14 @@ export const SessionPage = () => {
           {isThisBookSession && (
             <>
               {isRunning ? (
-                <Button onClick={() => setIsRunning(false)} size="lg" variant="secondary" className="px-8 rounded-full border border-[var(--color-outline)] text-[var(--color-on-surface)] bg-transparent hover:bg-[var(--color-surface-container-highest)]">
+                <Button onClick={() => setIsRunning(false)} variant="secondary" className="px-8 rounded-full border border-[var(--color-outline)] text-[var(--color-on-surface)] bg-transparent hover:bg-[var(--color-surface-container-highest)]">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2">
                     <path fillRule="evenodd" d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z" clipRule="evenodd" />
                   </svg>
                   Pause
                 </Button>
               ) : (
-                <Button onClick={() => setIsRunning(true)} size="lg" variant="secondary" className="px-8 rounded-full border border-[var(--color-outline)] text-[var(--color-on-surface)] bg-transparent hover:bg-[var(--color-surface-container-highest)]">
+                <Button onClick={() => setIsRunning(true)} variant="secondary" className="px-8 rounded-full border border-[var(--color-outline)] text-[var(--color-on-surface)] bg-transparent hover:bg-[var(--color-surface-container-highest)]">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2">
                     <path fillRule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clipRule="evenodd" />
                   </svg>
@@ -214,14 +214,14 @@ export const SessionPage = () => {
                 </Button>
               )}
 
-              <Button onClick={handleStop} size="lg" className="px-8 bg-[#1da073] text-white hover:bg-[#168a62] transition-colors rounded-full font-semibold border-none">
+              <Button onClick={handleStop} className="px-8 bg-[#1da073] text-white hover:bg-[#168a62] transition-colors rounded-full font-semibold border-none">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2">
                   <path fillRule="evenodd" d="M4.5 7.5a3 3 0 013-3h9a3 3 0 013 3v9a3 3 0 01-3 3h-9a3 3 0 01-3-3v-9z" clipRule="evenodd" />
                 </svg>
                 Finalizar Leitura
               </Button>
 
-              <Button onClick={() => setShowDiscardModal(true)} size="lg" variant="secondary" className="px-8 rounded-full border border-[var(--color-outline)] text-[var(--color-on-surface)] bg-transparent hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors">
+              <Button onClick={() => setShowDiscardModal(true)} variant="secondary" className="px-8 rounded-full border border-[var(--color-outline)] text-[var(--color-on-surface)] bg-transparent hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2">
                   <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.442.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
                 </svg>

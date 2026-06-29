@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Tag } from 'lucide-react';
+import { Star } from 'lucide-react';
 import type { Book } from '../types';
 import type { VisibleProperties } from './PropertyVisibilityToggle';
 import { MarkAsReadModal } from './MarkAsReadModal';

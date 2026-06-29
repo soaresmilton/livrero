@@ -1,5 +1,4 @@
-import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
@@ -8,7 +7,7 @@ import { NotesDashboardPage } from './NotesDashboardPage';
 import { useRecentNotes } from '../hooks/useNotes';
 import { useBooks } from '../features/books/hooks/useBooks';
 
-// ─── Mocks ───────────────────────────────────────────────────────────────────
+// ——— Mocks ——————————————————————————————————————————————————————————————————————
 
 vi.mock('../hooks/useNotes', () => ({
   useRecentNotes: vi.fn(),
@@ -24,7 +23,7 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-// ─── Fixtures ─────────────────────────────────────────────────────────────────
+// ——— Fixtures ———————————————————————————————————————————————————————————————————
 
 const makeBook = (overrides: Partial<ReturnType<typeof defaultBook>> = {}) =>
   ({ ...defaultBook(), ...overrides });
@@ -75,31 +74,31 @@ const renderPage = () =>
     </MemoryRouter>
   );
 
-// ─── Setup ────────────────────────────────────────────────────────────────────
+// ——— Setup ——————————————————————————————————————————————————————————————————————
 
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(useRecentNotes).mockReturnValue({
     data: [makeNote()],
     isLoading: false,
-  } as ReturnType<typeof useRecentNotes>);
+  } as unknown as string);
   vi.mocked(useBooks).mockReturnValue({
     data: mockBooksResponse([makeBook()]),
     isLoading: false,
-  } as ReturnType<typeof useBooks>);
+  } as unknown as string);
 });
 
-// ─── Tests ────────────────────────────────────────────────────────────────────
+// ——— Tests ——————————————————————————————————————————————————————————————————————
 
 describe('NotesDashboardPage — loading state', () => {
   test('shows loading indicator while notes are loading', () => {
-    vi.mocked(useRecentNotes).mockReturnValue({ data: undefined, isLoading: true } as ReturnType<typeof useRecentNotes>);
+    vi.mocked(useRecentNotes).mockReturnValue({ data: undefined, isLoading: true } as unknown as string);
     renderPage();
     expect(screen.getByText('Carregando notas...')).toBeInTheDocument();
   });
 
   test('shows loading indicator while books are loading', () => {
-    vi.mocked(useBooks).mockReturnValue({ data: undefined, isLoading: true } as ReturnType<typeof useBooks>);
+    vi.mocked(useBooks).mockReturnValue({ data: undefined, isLoading: true } as unknown as string);
     renderPage();
     expect(screen.getByText('Carregando notas...')).toBeInTheDocument();
   });
@@ -107,7 +106,7 @@ describe('NotesDashboardPage — loading state', () => {
 
 describe('NotesDashboardPage — empty state', () => {
   test('shows empty message when there are no notes', () => {
-    vi.mocked(useRecentNotes).mockReturnValue({ data: [], isLoading: false } as ReturnType<typeof useRecentNotes>);
+    vi.mocked(useRecentNotes).mockReturnValue({ data: [], isLoading: false } as unknown as string);
     renderPage();
     expect(screen.getByText(/Você ainda não possui anotações/)).toBeInTheDocument();
     expect(screen.getByText(/Comece a ler um livro/)).toBeInTheDocument();
@@ -117,7 +116,7 @@ describe('NotesDashboardPage — empty state', () => {
     vi.mocked(useRecentNotes).mockReturnValue({
       data: [makeNote({ book_id: 'unknown-book' })],
       isLoading: false,
-    } as ReturnType<typeof useRecentNotes>);
+    } as unknown as string);
     renderPage();
     expect(screen.getByText(/Você ainda não possui anotações/)).toBeInTheDocument();
   });
@@ -139,7 +138,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useRecentNotes).mockReturnValue({
       data: [makeNote({ content_markdown: '' })],
       isLoading: false,
-    } as ReturnType<typeof useRecentNotes>);
+    } as unknown as string);
     renderPage();
     expect(screen.getByText('Nenhuma anotação ainda...')).toBeInTheDocument();
   });
@@ -153,7 +152,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([makeBook({ status: 'READ', finished_reading_at: '2024-03-01T00:00:00Z' })]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
     renderPage();
     expect(screen.getByText('Lido')).toBeInTheDocument();
   });
@@ -162,7 +161,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([makeBook({ status: 'WANT_TO_READ' })]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
     renderPage();
     expect(screen.getByText('Quero Ler')).toBeInTheDocument();
   });
@@ -171,7 +170,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([makeBook({ status: 'ABANDONED' })]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
     renderPage();
     expect(screen.getByText('Abandonado')).toBeInTheDocument();
   });
@@ -185,7 +184,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([makeBook({ status: 'READING', current_page: null, total_pages: 100 })]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
     renderPage();
     expect(screen.getByText(/0 \/ 100 páginas \(0%\)/)).toBeInTheDocument();
   });
@@ -194,7 +193,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([makeBook({ status: 'READ', current_page: 200, finished_reading_at: '2024-03-01T00:00:00Z' })]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
     renderPage();
     expect(screen.getByText(/200 \/ 200 páginas \(100%\)/)).toBeInTheDocument();
   });
@@ -203,7 +202,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([makeBook({ status: 'WANT_TO_READ' })]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
     renderPage();
     expect(screen.queryByText(/páginas/)).not.toBeInTheDocument();
   });
@@ -212,7 +211,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([makeBook({ total_pages: null })]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
     renderPage();
     expect(screen.queryByText(/páginas/)).not.toBeInTheDocument();
   });
@@ -221,7 +220,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([makeBook({ cover_url: 'http://example.com/cover.jpg' })]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
     renderPage();
     expect(screen.getByAltText('Dom Casmurro')).toBeInTheDocument();
   });
@@ -240,7 +239,7 @@ describe('NotesDashboardPage — renders note cards correctly', () => {
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([makeBook({ status: 'READ', finished_reading_at: '2024-03-01T00:00:00Z' })]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
     renderPage();
     expect(screen.getByText(/Fim:/)).toBeInTheDocument();
   });
@@ -277,14 +276,14 @@ describe('NotesDashboardPage — search filter', () => {
     vi.mocked(useRecentNotes).mockReturnValue({
       data: [makeNote(), makeNote({ id: 'note-2', book_id: 'book-2' })],
       isLoading: false,
-    } as ReturnType<typeof useRecentNotes>);
+    } as unknown as string);
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([
         makeBook(),
         makeBook({ id: 'book-2', title: 'Memórias Póstumas', author: 'Machado de Assis' }),
       ]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
 
     renderPage();
     await userEvent.type(screen.getByPlaceholderText(/Título, autor, conteúdo, data/), 'Dom');
@@ -296,14 +295,14 @@ describe('NotesDashboardPage — search filter', () => {
     vi.mocked(useRecentNotes).mockReturnValue({
       data: [makeNote(), makeNote({ id: 'note-2', book_id: 'book-2' })],
       isLoading: false,
-    } as ReturnType<typeof useRecentNotes>);
+    } as unknown as string);
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([
         makeBook(),
         makeBook({ id: 'book-2', title: 'O Senhor dos Anéis', author: 'J.R.R. Tolkien' }),
       ]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
 
     renderPage();
     await userEvent.type(screen.getByPlaceholderText(/Título, autor, conteúdo, data/), 'Tolkien');
@@ -318,14 +317,14 @@ describe('NotesDashboardPage — search filter', () => {
         makeNote({ id: 'note-2', book_id: 'book-2', content_markdown: 'Épico de fantasia' }),
       ],
       isLoading: false,
-    } as ReturnType<typeof useRecentNotes>);
+    } as unknown as string);
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([
         makeBook(),
         makeBook({ id: 'book-2', title: 'O Hobbit', author: 'Tolkien' }),
       ]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
 
     renderPage();
     await userEvent.type(screen.getByPlaceholderText(/Título, autor, conteúdo, data/), 'ciúme');
@@ -350,7 +349,7 @@ describe('NotesDashboardPage — search filter', () => {
     renderPage();
     const input = screen.getByPlaceholderText(/Título, autor, conteúdo, data/);
     await userEvent.type(input, 'Dom');
-    const clearBtn = screen.getByTitle ? document.querySelector('button[class*="absolute right-3"]') : null;
+    
     // The X button is rendered when query is non-empty
     expect(document.querySelector('button[class*="absolute right-3"]')).toBeInTheDocument();
   });
@@ -359,9 +358,7 @@ describe('NotesDashboardPage — search filter', () => {
     renderPage();
     const input = screen.getByPlaceholderText(/Título, autor, conteúdo, data/);
     await userEvent.type(input, 'Dom');
-    // Click the clear button (the X)
-    const clearBtn = document.querySelector('button[class*="absolute right-3"]') as HTMLElement;
-    await userEvent.click(clearBtn);
+    await userEvent.click(document.querySelector('button[class*="absolute right-3"]') as HTMLElement);
     expect((input as HTMLInputElement).value).toBe('');
   });
 
@@ -383,14 +380,14 @@ describe('NotesDashboardPage — sorting', () => {
         makeNote({ id: 'n2', book_id: 'book-2', updated_at: '2024-01-01T00:00:00Z' }),
       ],
       isLoading: false,
-    } as ReturnType<typeof useRecentNotes>);
+    } as unknown as string);
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([
         makeBook({ id: 'book-1', title: 'Zumbi', author: 'Carlos', started_reading_at: '2024-06-01T00:00:00Z' }),
         makeBook({ id: 'book-2', title: 'Abelha', author: 'Ana', started_reading_at: '2024-01-01T00:00:00Z' }),
       ]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
   };
 
   test('shows all sort buttons', () => {
@@ -440,18 +437,18 @@ describe('NotesDashboardPage — sorting', () => {
   test('sorts gracefully when fields are null or undefined', async () => {
     vi.mocked(useRecentNotes).mockReturnValue({
       data: [
-        makeNote({ id: 'n1', book_id: 'book-1', updated_at: null as any }),
+        makeNote({ id: 'n1', book_id: 'book-1', updated_at: null as unknown as string }),
         makeNote({ id: 'n2', book_id: 'book-2', updated_at: '2024-01-01T00:00:00Z' }),
       ],
       isLoading: false,
-    } as ReturnType<typeof useRecentNotes>);
+    } as unknown as string);
     vi.mocked(useBooks).mockReturnValue({
       data: mockBooksResponse([
-        makeBook({ id: 'book-1', title: 'Zumbi', author: 'Carlos', started_reading_at: null as any }),
+        makeBook({ id: 'book-1', title: 'Zumbi', author: 'Carlos', started_reading_at: null as unknown as string }),
         makeBook({ id: 'book-2', title: 'Abelha', author: 'Ana', started_reading_at: '2024-01-01T00:00:00Z' }),
       ]),
       isLoading: false,
-    } as ReturnType<typeof useBooks>);
+    } as unknown as string);
 
     renderPage();
     await userEvent.click(screen.getByText('Início de Leitura')); // desc -> book-2 has date, book-1 has ''
@@ -463,7 +460,7 @@ describe('NotesDashboardPage — sorting', () => {
     twoBooks();
     renderPage();
     const dateBtn = screen.getByText('Data da Nota');
-    await userEvent.click(dateBtn); // toggles from desc → asc
+    await userEvent.click(dateBtn); // toggles from desc â†’ asc
     const cards = screen.getAllByRole('heading', { level: 3 });
     expect(cards[0]).toHaveTextContent('Abelha'); // oldest note first (book-2 = Jan)
   });
@@ -471,14 +468,14 @@ describe('NotesDashboardPage — sorting', () => {
   test('sorts by started_reading_at', async () => {
     twoBooks();
     renderPage();
-    await userEvent.click(screen.getByText('Início de Leitura')); // desc
-    await userEvent.click(screen.getByText('Início de Leitura')); // asc
+    await userEvent.click(screen.getByText('InÃ­cio de Leitura')); // desc
+    await userEvent.click(screen.getByText('InÃ­cio de Leitura')); // asc
     const cards = screen.getAllByRole('heading', { level: 3 });
     expect(cards[0]).toHaveTextContent('Abelha'); // earliest start
   });
 });
 
-describe('NotesDashboardPage — page size selector', () => {
+describe('NotesDashboardPage â€” page size selector', () => {
   test('renders page size options', () => {
     renderPage();
     expect(screen.getByText('5')).toBeInTheDocument();
@@ -494,12 +491,12 @@ describe('NotesDashboardPage — page size selector', () => {
   });
 });
 
-describe('NotesDashboardPage — pagination', () => {
+describe('NotesDashboardPage â€” pagination', () => {
   const manyNotes = (count: number) => {
     const notes = Array.from({ length: count }, (_, i) => makeNote({ id: `note-${i}`, book_id: 'book-1' }));
     const book  = makeBook();
-    vi.mocked(useRecentNotes).mockReturnValue({ data: notes, isLoading: false } as ReturnType<typeof useRecentNotes>);
-    vi.mocked(useBooks).mockReturnValue({ data: mockBooksResponse([book]), isLoading: false } as ReturnType<typeof useBooks>);
+    vi.mocked(useRecentNotes).mockReturnValue({ data: notes, isLoading: false } as unknown as string);
+    vi.mocked(useBooks).mockReturnValue({ data: mockBooksResponse([book]), isLoading: false } as unknown as string);
   };
 
   test('does not render pagination when items fit in one page', () => {
@@ -512,49 +509,49 @@ describe('NotesDashboardPage — pagination', () => {
     manyNotes(6); // 6 items, switch to pageSize=5
     renderPage();
     await userEvent.click(screen.getByText('5'));
-    expect(screen.getByTitle('Próxima')).toBeInTheDocument();
-    expect(screen.getByTitle('Última')).toBeInTheDocument();
+    expect(screen.getByTitle('PrÃ³xima')).toBeInTheDocument();
+    expect(screen.getByTitle('Ãšltima')).toBeInTheDocument();
   });
 
-  test('shows correct "Exibindo X–Y de Z" info text', async () => {
+  test('shows correct "Exibindo Xâ€“Y de Z" info text', async () => {
     manyNotes(12);
     renderPage();
     await userEvent.click(screen.getByText('5'));
-    expect(screen.getByText('Exibindo 1–5 de 12')).toBeInTheDocument();
+    expect(screen.getByText('Exibindo 1â€“5 de 12')).toBeInTheDocument();
   });
 
   test('navigates to next page', async () => {
     manyNotes(12);
     renderPage();
     await userEvent.click(screen.getByText('5'));
-    await userEvent.click(screen.getByTitle('Próxima'));
-    expect(screen.getByText('Exibindo 6–10 de 12')).toBeInTheDocument();
+    await userEvent.click(screen.getByTitle('PrÃ³xima'));
+    expect(screen.getByText('Exibindo 6â€“10 de 12')).toBeInTheDocument();
   });
 
   test('navigates to last page', async () => {
     manyNotes(12);
     renderPage();
     await userEvent.click(screen.getByText('5'));
-    await userEvent.click(screen.getByTitle('Última'));
-    expect(screen.getByText('Exibindo 11–12 de 12')).toBeInTheDocument();
+    await userEvent.click(screen.getByTitle('Ãšltima'));
+    expect(screen.getByText('Exibindo 11â€“12 de 12')).toBeInTheDocument();
   });
 
   test('navigates to first page', async () => {
     manyNotes(12);
     renderPage();
     await userEvent.click(screen.getByText('5'));
-    await userEvent.click(screen.getByTitle('Última'));
+    await userEvent.click(screen.getByTitle('Ãšltima'));
     await userEvent.click(screen.getByTitle('Primeira'));
-    expect(screen.getByText('Exibindo 1–5 de 12')).toBeInTheDocument();
+    expect(screen.getByText('Exibindo 1â€“5 de 12')).toBeInTheDocument();
   });
 
   test('navigates to previous page', async () => {
     manyNotes(12);
     renderPage();
     await userEvent.click(screen.getByText('5'));
-    await userEvent.click(screen.getByTitle('Última'));
+    await userEvent.click(screen.getByTitle('Ãšltima'));
     await userEvent.click(screen.getByTitle('Anterior'));
-    expect(screen.getByText('Exibindo 6–10 de 12')).toBeInTheDocument();
+    expect(screen.getByText('Exibindo 6â€“10 de 12')).toBeInTheDocument();
   });
 
   test('clicking page number navigates directly', async () => {
@@ -565,19 +562,19 @@ describe('NotesDashboardPage — pagination', () => {
     const page2 = screen.getAllByRole('button').find((b) => b.textContent === '2');
     if (page2) {
       await userEvent.click(page2);
-      expect(screen.getByText('Exibindo 6–10 de 20')).toBeInTheDocument();
+      expect(screen.getByText('Exibindo 6â€“10 de 20')).toBeInTheDocument();
     }
   });
 
   test('shows ellipsis for large page counts', async () => {
     manyNotes(50);
     renderPage();
-    await userEvent.click(screen.getAllByText('5')[0]);
+    await userEvent.click(screen.getAllByText('5')[0]!);
     // navigate to a middle page to trigger ellipsis
     const page5 = screen.getAllByRole('button').find((b) => b.textContent === '5');
     if (page5) {
       await userEvent.click(page5);
-      expect(screen.getByText('…')).toBeInTheDocument();
+      expect(screen.getByText('â€¦')).toBeInTheDocument();
     }
   });
 
@@ -585,19 +582,19 @@ describe('NotesDashboardPage — pagination', () => {
     manyNotes(12);
     renderPage();
     await userEvent.click(screen.getByText('5'));
-    await userEvent.click(screen.getByTitle('Última'));
-    const input = screen.getByPlaceholderText(/Título, autor, conteúdo, data/);
+    await userEvent.click(screen.getByTitle('Ãšltima'));
+    const input = screen.getByPlaceholderText(/TÃ­tulo, autor, conteÃºdo, data/);
     await userEvent.type(input, 'Dom');
     // After filter (all 12 match 'Dom'), pageset back to 1
-    expect(screen.getByText('Exibindo 1–5 de 12')).toBeInTheDocument();
+    expect(screen.getByText('Exibindo 1â€“5 de 12')).toBeInTheDocument();
   });
 
   test('resets to page 1 when page size changes', async () => {
     manyNotes(20);
     renderPage();
     await userEvent.click(screen.getByText('5'));
-    await userEvent.click(screen.getByTitle('Última'));
+    await userEvent.click(screen.getByTitle('Ãšltima'));
     await userEvent.click(screen.getByText('10'));
-    expect(screen.getByText('Exibindo 1–10 de 20')).toBeInTheDocument();
+    expect(screen.getByText('Exibindo 1â€“10 de 20')).toBeInTheDocument();
   });
 });

@@ -34,8 +34,8 @@ describe('useNotes', () => {
   });
 
   it('useRecentNotes should fetch recent notes', async () => {
-    const mockNotes = [{ id: '1', content_markdown: 'test' }];
-    vi.mocked(noteService.getRecentNotes).mockResolvedValueOnce(mockNotes as any);
+    const mockNotes = [{ id: '1', book_id: 'b1', content_markdown: 'test', created_at: '', updated_at: '' }];
+    vi.mocked(noteService.getRecentNotes).mockResolvedValueOnce(mockNotes as typeof mockNotes);
 
     const { result } = renderHook(() => useRecentNotes(10), { wrapper });
 
@@ -44,8 +44,8 @@ describe('useNotes', () => {
   });
 
   it('useBookNote should fetch note for book', async () => {
-    const mockNote = { id: '1', content_markdown: 'test' };
-    vi.mocked(noteService.getBookNote).mockResolvedValueOnce(mockNote as any);
+    const mockNote = { id: '1', book_id: 'b1', content_markdown: 'test', created_at: '', updated_at: '' };
+    vi.mocked(noteService.getBookNote).mockResolvedValueOnce(mockNote as typeof mockNote);
 
     const { result } = renderHook(() => useBookNote('book-1'), { wrapper });
 
@@ -54,8 +54,8 @@ describe('useNotes', () => {
   });
 
   it('useSaveBookNote should call save endpoint', async () => {
-    const mockNote = { id: '1', content_markdown: 'updated' };
-    vi.mocked(noteService.saveBookNote).mockResolvedValueOnce(mockNote as any);
+    const mockNote = { id: '1', book_id: 'b1', content_markdown: 'updated', created_at: '', updated_at: '' };
+    vi.mocked(noteService.saveBookNote).mockResolvedValueOnce(mockNote as typeof mockNote);
 
     const { result } = renderHook(() => useSaveBookNote(), { wrapper });
 

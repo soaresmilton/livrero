@@ -33,7 +33,7 @@ export const BookNotesPage: React.FC = () => {
     if (note && content === '') {
       setContent(note.content_markdown || '');
     }
-  }, [note]);
+  }, [note, content]);
 
   const handleChange = (val: string) => {
     setContent(val);
