@@ -41,7 +41,7 @@ jobs:
 
       - name: Run tests
         env:
-          SECRET_KEY: "test-secret-key-for-ci"
+          SECRET_KEY: "test-secret-key-for-ci-0123456789"
         run: pytest --cov=app --cov-report=term-missing
 
   # ────────────────────────────────────────────────────────────────────────────
