@@ -90,7 +90,7 @@ infrastructure/      # SQLAlchemy models, database config, external services
 ├── config/          # Settings, environment config
 └── repositories/    # Repository implementations (domain interfaces)
 api/                 # HTTP endpoints (FastAPI routers)
-├── v1/              # API v1 routes (auth, books, sessions, notes, health)
+├── v1/              # API v1 routes (auth, books, sessions, notes, goals, dashboard, health)
 └── deps.py          # Dependency injection setup
 shared/              # Exceptions, utilities, constants
 ```

@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.auth import router as auth_router
 from app.api.v1.books import router as books_router
+from app.api.v1.dashboard import router as dashboard_router
+from app.api.v1.goals import router as goals_router
 from app.api.v1.health import router as health_router
 from app.api.v1.notes import router as notes_router
 from app.api.v1.sessions import router as sessions_router
@@ -44,6 +46,8 @@ def create_app() -> FastAPI:
     app.include_router(books_router, prefix="/api/v1")
     app.include_router(sessions_router, prefix="/api/v1")
     app.include_router(notes_router, prefix="/api/v1")
+    app.include_router(goals_router, prefix="/api/v1")
+    app.include_router(dashboard_router, prefix="/api/v1")
 
     return app
 
