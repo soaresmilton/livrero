@@ -1,5 +1,8 @@
 # Import all models so SQLAlchemy metadata is populated for Alembic
 from app.infrastructure.persistence.models.book_model import BookModel  # noqa: F401
+from app.infrastructure.persistence.models.reading_goal_model import (
+    ReadingGoalModel,  # noqa: F401
+)
 from app.infrastructure.persistence.models.reading_note_model import (
     ReadingNoteModel,  # noqa: F401
 )
@@ -19,4 +22,5 @@ __all__ = [
     "BookModel",
     "ReadingSessionModel",
     "ReadingNoteModel",
+    "ReadingGoalModel",
 ]

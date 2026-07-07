@@ -53,3 +53,19 @@ def get_note_repository(session: AsyncSession = Depends(get_session)):
     )
 
     return SQLAlchemyReadingNoteRepository(session)
+
+
+def get_goal_repository(session: AsyncSession = Depends(get_session)):
+    from app.infrastructure.persistence.repositories.reading_goal_repository import (
+        SQLAlchemyReadingGoalRepository,
+    )
+
+    return SQLAlchemyReadingGoalRepository(session)
+
+
+def get_stats_repository(session: AsyncSession = Depends(get_session)):
+    from app.infrastructure.persistence.repositories.stats_repository import (
+        SQLAlchemyStatsRepository,
+    )
+
+    return SQLAlchemyStatsRepository(session)

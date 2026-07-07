@@ -87,13 +87,13 @@ livrero/
 
 | Milestone | Status         | Description                   |
 | --------- | -------------- | ----------------------------- |
-| M0        | ✅ In Progress  | Foundation & infrastructure   |
-| M1        | 🔜 Planned     | Authentication (JWT)          |
-| M2        | 🔜 Planned     | Library management            |
-| M3        | 🔜 Planned     | Reading sessions & timer      |
-| M4        | 🔜 Planned     | Markdown notes                |
-| M5        | 🔜 Planned     | Dashboard & heatmap           |
-| M6        | 🔜 Planned     | Annual reading goals          |
+| M0        | ✅ Done         | Foundation & infrastructure   |
+| M1        | ✅ Done         | Authentication (JWT)          |
+| M2        | ✅ Done         | Library management            |
+| M3        | ✅ Done         | Reading sessions & timer      |
+| M4        | ✅ Done         | Markdown notes                |
+| M5        | ✅ Done         | Dashboard & heatmap           |
+| M6        | ✅ Done         | Annual reading goals          |
 | M7        | 🔜 Planned     | Hardening & production-ready  |
 
 ## Development
