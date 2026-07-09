@@ -4,16 +4,14 @@ WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    UV_NO_CACHE=1 \
+    UV_SYSTEM_PYTHON=1
 
-# Install dependencies first (cached layer — only busts on pyproject.toml change)
-COPY pyproject.toml .
-RUN pip install hatchling && \
-    pip install fastapi uvicorn[standard] sqlalchemy[asyncio] asyncpg alembic \
-    "pydantic[email]" pydantic-settings "python-jose[cryptography]" \
-    "pwdlib[argon2,bcrypt]" python-multipart httpx && \
-    pip install pytest pytest-asyncio pytest-cov ruff aiosqlite
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Install dependencies first (cached layer — only busts on lockfile/pyproject change)
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
 
 # Copy application code
 COPY . .
