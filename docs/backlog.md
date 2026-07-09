@@ -20,7 +20,7 @@
     - Ordenação por data de atualização.
 
 
-  ### Lista / tabela de sessões de leitura
+  ### Histórico de sessões de leitura
   - **Descrição**: A página de sessões de leitura deve permitir a visualização das sessões de leitura por diversos critérios.
   - **Funcionalidades**:
     - Ordenação por data de início
@@ -30,8 +30,17 @@
   - **Estrutura das colunas**: 
     - Data de Início
     - Data de Fim
+    - Nome do Livro
     - Duração
     - Número de Páginas Lidas
     
 ### Marcar como concluído
 - **Descrição**: Quando o usuário selecionar a opção "Marcar como Lido", no modal de confirmação, disponibilizar para ele a nota de avaliação.
+
+
+### Melhorar dashboard
+- **Descrição**: A página de dashboard deve fornecer informações mais detalhadas sobre o progresso do usuário.
+- **Funcionalidades**:
+  - Gráfico de progresso de leitura (ex: número de livros lidos por mês).
+  - Estatísticas de leitura (ex: média de páginas lidas por sessão, tempo médio de leitura por livro).
+  - Sugestões de livros com base no histórico de leitura do usuário

@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import { RunningHead } from '@/components/ui/RunningHead'
+import { Marginalia } from '@/components/ui/Marginalia'
 import { useBooks, useUpdateBook, useDeleteBook } from '@/features/books/hooks/useBooks'
 import { BookCard } from '@/features/books/components/BookCard'
+import { BookCardSkeleton } from '@/features/books/components/BookCardSkeleton'
 import { AddBookModal } from '@/features/books/components/AddBookModal'
 import { PropertyVisibilityToggle, defaultVisibleProperties, VisibleProperties } from '@/features/books/components/PropertyVisibilityToggle'
 import { DeleteConfirmationModal } from '@/features/books/components/DeleteConfirmationModal'
@@ -80,45 +83,59 @@ export function LibraryPage() {
   return (
     <div className="min-h-full">
 
-      <main className="w-full px-8 py-8 md:py-12">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
+      <main className="w-full px-4 py-6 sm:px-6 lg:px-8 md:py-10">
+        <div className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1
-              className="text-3xl md:text-4xl font-bold tracking-tight"
-              style={{
-                fontFamily: 'Source Serif 4, Georgia, serif',
-                color: 'var(--color-on-surface)',
-              }}
-            >
+            <RunningHead
+              section="Biblioteca"
+              detail={
+                data?.total
+                  ? `${data.total} ${data.total === 1 ? 'livro' : 'livros'}`
+                  : undefined
+              }
+            />
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight font-serif">
               Sua Biblioteca
             </h1>
-            <p className="mt-2 text-[var(--color-on-surface-variant)] text-lg">
+            <p className="mt-2 text-[var(--color-on-surface-variant)]">
               Uma coleção curada da sua jornada de leitura.
+              {data?.total && (
+                <>
+                  {' '}
+                  <Marginalia>
+                    {activeTab === 'TODOS'
+                      ? `${data.total} no total`
+                      : `${data.items?.length || 0} com este status`}
+                  </Marginalia>
+                </>
+              )}
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="relative">
+
+          {/* Search + actions — wrap on mobile */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[180px]">
               <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar título, autor ou ISBN..."
-                className="pl-9 pr-4 py-2 w-full sm:min-w-[300px] bg-[var(--color-surface-container-low)] border-none rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] text-[var(--color-on-surface)]"
+                className="pl-9 pr-4 py-2 w-full bg-[var(--color-surface-container-low)] border-none rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] text-[var(--color-on-surface)]"
               />
             </div>
-            <PropertyVisibilityToggle 
-              visibleProperties={visibleProperties} 
-              onChange={setVisibleProperties} 
+            <PropertyVisibilityToggle
+              visibleProperties={visibleProperties}
+              onChange={setVisibleProperties}
             />
-            <Button 
+            <Button
               onClick={() => {
                 setBookToEdit(null)
                 setIsAddModalOpen(true)
               }}
-              className="shadow-sm hover:shadow-md transition-shadow flex items-center gap-2"
+              className="shadow-sm hover:shadow-md transition-shadow flex items-center gap-2 whitespace-nowrap"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -129,7 +146,7 @@ export function LibraryPage() {
         </div>
 
         <div className="mb-8 border-b border-[var(--color-surface-variant)]">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+          <nav className="-mb-px flex space-x-6 overflow-x-auto scrollbar-none" aria-label="Tabs">
             {tabs.map((tab) => (
               <button
                 key={tab.value}
@@ -152,12 +169,14 @@ export function LibraryPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <BookCardSkeleton key={i} />
+            ))}
           </div>
         ) : data?.items && data.items.length > 0 ? (
           <>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
               {data.items.map((book) => (
                 <BookCard 
                   key={book.id} 
@@ -214,20 +233,27 @@ export function LibraryPage() {
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-            <div className="w-16 h-16 mb-4 flex items-center justify-center text-[var(--color-on-surface-variant)]">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div
+              className="w-16 h-16 mb-6 rounded-xl flex items-center justify-center"
+              style={{ backgroundColor: 'var(--color-surface-container-high)' }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: 'var(--color-primary)' }}>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-[var(--color-on-surface)]">Nenhum livro encontrado</h3>
-            <p className="mt-1 text-sm text-[var(--color-on-surface-variant)] max-w-sm">
-              {activeTab === 'TODOS' 
-                ? "Sua biblioteca está vazia. Comece adicionando seu primeiro livro!" 
-                : "Você não tem livros com este status no momento."}
+            <h3 className="text-lg font-bold font-serif mb-1" style={{ color: 'var(--color-ink)' }}>
+              {activeTab === 'TODOS' ? 'A prateleira está vazia' : 'Nenhum livro aqui'}
+            </h3>
+            <p className="text-sm max-w-xs leading-relaxed" style={{ color: 'var(--color-on-surface-variant)' }}>
+              {activeTab === 'TODOS'
+                ? 'Todo santuário começa com um primeiro livro. Adicione o seu.'
+                : 'Nenhum livro com este status no momento. Explore outra aba.'}
             </p>
-            <Button className="mt-6" onClick={() => setIsAddModalOpen(true)}>
-              Adicionar Primeiro Livro
-            </Button>
+            {activeTab === 'TODOS' && (
+              <Button className="mt-6" onClick={() => setIsAddModalOpen(true)}>
+                Adicionar Primeiro Livro
+              </Button>
+            )}
           </div>
         )}
       </main>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { RunningHead } from '@/components/ui/RunningHead';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, X, Calendar, CheckCircle2, BookOpen, Clock,
@@ -163,15 +164,13 @@ export const NotesDashboardPage: React.FC = () => {
 
   return (
     <div className="min-h-full">
-      <main className="w-full px-8 py-8 md:py-12">
+      <main className="w-full px-4 py-6 sm:px-6 lg:px-8 md:py-10">
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
           <div>
-            <h1
-              className="text-3xl md:text-4xl font-bold tracking-tight"
-              style={{ fontFamily: 'Source Serif 4, Georgia, serif', color: 'var(--color-on-surface)' }}
-            >
+            <RunningHead section="Anotações" />
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight font-serif">
               Minhas Anotações
             </h1>
             <p className="mt-2 text-[var(--color-on-surface-variant)] text-lg">
@@ -260,7 +259,7 @@ export const NotesDashboardPage: React.FC = () => {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(340px,1fr))] gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
           {paginated.map(({ note, book }) => {
             const status     = STATUS_LABEL[book.status] ?? STATUS_LABEL.WANT_TO_READ;
             const startDate  = fmtDate(book.started_reading_at);
@@ -273,8 +272,8 @@ export const NotesDashboardPage: React.FC = () => {
               <div
                 key={note.id}
                 onClick={() => navigate(`/library/${book.id}/notes`)}
-                className="flex flex-col rounded-2xl border bg-white hover:shadow-lg transition-all duration-200 cursor-pointer hover:-translate-y-0.5 overflow-hidden"
-                style={{ borderColor: 'var(--color-outline-variant)' }}
+                className="flex flex-col rounded-2xl border hover:shadow-lg transition-all duration-200 cursor-pointer hover:-translate-y-0.5 overflow-hidden"
+                style={{ backgroundColor: 'var(--color-surface-container-lowest)', borderColor: 'var(--color-outline-variant)' }}
               >
                 <div className="flex items-start gap-4 p-4 pb-3">
                   {book.cover_url ? (
