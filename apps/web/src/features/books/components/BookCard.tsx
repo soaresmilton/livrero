@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
+import { Marginalia } from '@/components/ui/Marginalia';
 import type { Book } from '../types';
 import type { VisibleProperties } from './PropertyVisibilityToggle';
 import { MarkAsReadModal } from './MarkAsReadModal';
@@ -14,11 +15,27 @@ interface BookCardProps {
   visibleProperties?: VisibleProperties;
 }
 
-const statusColors: Record<Book['status'], string> = {
-  WANT_TO_READ: 'bg-blue-100 text-blue-800 border-blue-200',
-  READING: 'bg-amber-100 text-amber-800 border-amber-200',
-  READ: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  ABANDONED: 'bg-rose-100 text-rose-800 border-rose-200',
+const statusChipStyle: Record<Book['status'], React.CSSProperties> = {
+  WANT_TO_READ: {
+    backgroundColor: 'var(--color-status-want-bg)',
+    color: 'var(--color-status-want-text)',
+    borderColor: 'var(--color-status-want-border)',
+  },
+  READING: {
+    backgroundColor: 'var(--color-status-reading-bg)',
+    color: 'var(--color-status-reading-text)',
+    borderColor: 'var(--color-status-reading-border)',
+  },
+  READ: {
+    backgroundColor: 'var(--color-status-read-bg)',
+    color: 'var(--color-status-read-text)',
+    borderColor: 'var(--color-status-read-border)',
+  },
+  ABANDONED: {
+    backgroundColor: 'var(--color-status-abandoned-bg)',
+    color: 'var(--color-status-abandoned-text)',
+    borderColor: 'var(--color-status-abandoned-border)',
+  },
 };
 
 const statusLabels: Record<Book['status'], string> = {
@@ -67,8 +84,8 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
   };
 
   return (
-    <div 
-      className="group relative flex flex-col rounded-xl border border-[var(--color-outline-variant)] bg-[#ffffff] shadow-sm transition-all hover:shadow-md hover:-translate-y-1 h-full cursor-pointer"
+    <div
+      className="group relative flex flex-col rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-lowest)] shadow-sm transition-all motion-safe:hover:shadow-md motion-safe:hover:-translate-y-1 h-full cursor-pointer"
       onClick={() => navigate(`/library/${book.id}/notes`)}
     >
       {(!visibleProperties || visibleProperties.cover) && (
@@ -92,7 +109,10 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
           
       {(!visibleProperties || visibleProperties.status) && (
         <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
-          <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium shadow-sm backdrop-blur-md ${statusColors[book.status]}`}>
+          <span
+            className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium shadow-sm backdrop-blur-md"
+            style={statusChipStyle[book.status]}
+          >
             {statusLabels[book.status]}
           </span>
         </div>
@@ -105,7 +125,9 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
             e.stopPropagation();
             setIsMenuOpen(!isMenuOpen);
           }}
-          className="p-1 rounded-full bg-black/40 text-white hover:bg-black/60 backdrop-blur-md transition-colors shadow-sm cursor-pointer"
+          aria-label="Opções do livro"
+          aria-expanded={isMenuOpen}
+          className="p-2.5 rounded-full bg-black/40 text-white hover:bg-black/60 backdrop-blur-md transition-colors shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -113,7 +135,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
           </button>
           
           {isMenuOpen && (
-            <div className="absolute right-0 mt-1 w-36 rounded-md shadow-lg bg-[#FFFFFF] border border-[var(--color-outline-variant)] z-10 overflow-hidden">
+            <div className="absolute right-0 mt-1 w-36 rounded-md shadow-lg bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)] z-10 overflow-hidden">
               <div className="flex flex-col divide-y divide-[var(--color-outline-variant)]" role="menu" aria-orientation="vertical">
                 {onStatusChange && book.status === 'ABANDONED' && (
                   <button
@@ -206,7 +228,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
           )}
         </div>
       
-      <div className="flex flex-1 flex-col p-4 pb-5 rounded-b-xl bg-[#ffffff]">
+      <div className="flex flex-1 flex-col p-4 pb-5 rounded-b-xl bg-[var(--color-surface-container-lowest)]">
         {(!visibleProperties || visibleProperties.title) && (
           <h3 className="line-clamp-2 text-lg font-semibold text-[var(--color-primary)]" title={book.title}>
             {book.title}
@@ -224,7 +246,14 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
           {visibleProperties?.genres && book.genres && book.genres.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1 mb-1">
               {book.genres.map(g => (
-                <span key={g} className="px-1.5 py-0.5 bg-[#d4e8d1] text-[#1e311e] text-[10px] rounded-full">
+                <span
+                  key={g}
+                  className="px-1.5 py-0.5 text-[10px] rounded-full"
+                  style={{
+                    backgroundColor: 'var(--color-primary-fixed)',
+                    color: 'var(--color-on-primary-fixed)',
+                  }}
+                >
                   {g}
                 </span>
               ))}
@@ -274,14 +303,19 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
           <div className="mt-4 pt-4 border-t border-[var(--color-outline-variant)] flex flex-col gap-2">
             {/* Progress Bar */}
             <div className="w-full h-1.5 bg-[var(--color-surface-container-highest)] rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-[#f8c12a] transition-all duration-500 ease-out"
-                style={{ width: `${progressPercentage}%` }}
+              <div
+                className="h-full transition-all duration-500 ease-out"
+                style={{
+                  backgroundColor: 'var(--color-reading-progress)',
+                  width: `${progressPercentage}%`,
+                }}
               />
             </div>
             
-            <p className="text-[11px] font-medium text-[var(--color-on-surface-variant)]">
-              {book.current_page || 0} / {book.total_pages} páginas ({Math.round(progressPercentage)}%)
+            <p className="text-[11px]">
+              <Marginalia>
+                {book.current_page || 0} / {book.total_pages} págs · {Math.round(progressPercentage)}%
+              </Marginalia>
             </p>
 
             <div className="flex items-center gap-3 mt-1 flex-wrap">
@@ -300,20 +334,20 @@ export const BookCard: React.FC<BookCardProps> = ({ book, onStatusChange, onEdit
             </div>
 
             {book.started_reading_at && (
-              <p className="text-[11px] font-medium text-[#1da073] flex items-center gap-1 mt-0.5">
+              <p className="text-[11px] font-medium text-[var(--color-reading-date)] flex items-center gap-1 mt-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0121 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                 </svg>
-                Início: {formatStartDate(book.started_reading_at)}
+                <Marginalia>Início: {formatStartDate(book.started_reading_at)}</Marginalia>
               </p>
             )}
             
             {book.status === 'READ' && book.finished_reading_at && (
-              <p className="text-[11px] font-medium text-[#1da073] flex items-center gap-1">
+              <p className="text-[11px] font-medium text-[var(--color-reading-date)] flex items-center gap-1">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Fim: {formatStartDate(book.finished_reading_at)}
+                <Marginalia>Fim: {formatStartDate(book.finished_reading_at)}</Marginalia>
               </p>
             )}
           </div>

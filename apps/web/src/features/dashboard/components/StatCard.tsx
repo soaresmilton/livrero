@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Marginalia } from '@/components/ui/Marginalia'
 
 interface StatCardProps {
   label: string
@@ -9,18 +10,24 @@ interface StatCardProps {
 
 export function StatCard({ label, value, hint, icon }: StatCardProps) {
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] p-5">
+    <div className="flex flex-col gap-1 rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] px-5 py-4 transition-all motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-sm cursor-default">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-[var(--color-on-surface-variant)]">{label}</span>
-        {icon && <span className="text-[var(--color-primary)]">{icon}</span>}
+        <span
+          className="text-[10px] font-semibold tracking-[0.16em] uppercase font-sans"
+          style={{ color: 'var(--color-on-surface-variant)' }}
+        >
+          {label}
+        </span>
+        {icon && <span style={{ color: 'var(--color-primary)' }}>{icon}</span>}
       </div>
-      <span
-        className="text-3xl font-semibold text-[var(--color-on-surface)]"
-        style={{ fontFamily: 'Source Serif 4, Georgia, serif' }}
-      >
+      <span className="text-4xl font-bold leading-none mt-1 font-serif" style={{ color: 'var(--color-ink)' }}>
         {value}
       </span>
-      {hint && <span className="text-xs text-[var(--color-on-surface-variant)]">{hint}</span>}
+      {hint && (
+        <div className="mt-0.5">
+          <Marginalia>{hint}</Marginalia>
+        </div>
+      )}
     </div>
   )
 }

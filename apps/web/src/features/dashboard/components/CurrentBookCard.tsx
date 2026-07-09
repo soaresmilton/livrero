@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Marginalia } from '@/components/ui/Marginalia'
 import type { CurrentBook } from '../types'
 
 interface CurrentBookCardProps {
@@ -7,11 +8,8 @@ interface CurrentBookCardProps {
 
 export function CurrentBookCard({ book }: CurrentBookCardProps) {
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] p-6">
-      <h2
-        className="text-xl font-semibold text-[var(--color-on-surface)]"
-        style={{ fontFamily: 'Source Serif 4, Georgia, serif' }}
-      >
+    <div className="flex flex-col gap-4 rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] p-6 transition-all motion-safe:hover:shadow-sm">
+      <h2 className="text-xl font-semibold text-[var(--color-on-surface)] font-serif">
         Lendo agora
       </h2>
 
@@ -38,18 +36,16 @@ export function CurrentBookCard({ book }: CurrentBookCardProps) {
               <div className="mt-2 flex flex-col gap-1">
                 <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-surface-container-high)]">
                   <div
-                    className="h-full rounded-full bg-[var(--color-primary)]"
+                    className="h-full rounded-full transition-all"
                     style={{
-                      width: `${Math.min(
-                        100,
-                        Math.round((book.current_page / book.total_pages) * 100)
-                      )}%`,
+                      backgroundColor: 'var(--color-reading-progress)',
+                      width: `${Math.min(100, Math.round((book.current_page / book.total_pages) * 100))}%`,
                     }}
                   />
                 </div>
-                <span className="text-xs text-[var(--color-on-surface-variant)]">
+                <Marginalia>
                   Página {book.current_page} de {book.total_pages}
-                </span>
+                </Marginalia>
               </div>
             ) : null}
 

@@ -54,10 +54,7 @@ export function ReadingHeatmap({ year, days }: ReadingHeatmapProps) {
   return (
     <div className="flex flex-col gap-4 rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] p-6">
       <div className="flex items-center justify-between">
-        <h2
-          className="text-xl font-semibold text-[var(--color-on-surface)]"
-          style={{ fontFamily: 'Source Serif 4, Georgia, serif' }}
-        >
+        <h2 className="text-xl font-semibold text-[var(--color-on-surface)] font-serif">
           Hábito de leitura
         </h2>
         <span className="text-sm text-[var(--color-on-surface-variant)]">
@@ -65,7 +62,15 @@ export function ReadingHeatmap({ year, days }: ReadingHeatmapProps) {
         </span>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      {/* Fade mask hints at horizontal scroll on small screens */}
+      <div
+        className="relative overflow-hidden"
+        style={{
+          maskImage: 'linear-gradient(to right, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%)',
+        }}
+      >
+      <div className="flex gap-2 overflow-x-auto pb-2 px-6">
         <div className="flex flex-col justify-between py-0.5 pr-1 text-[10px] text-[var(--color-on-surface-variant)]">
           {WEEKDAY_LABELS.map((label, i) => (
             <span key={label} className={i % 2 === 0 ? '' : 'opacity-0'}>
@@ -100,6 +105,7 @@ export function ReadingHeatmap({ year, days }: ReadingHeatmapProps) {
             </div>
           ))}
         </div>
+      </div>
       </div>
 
       <div className="flex items-center gap-2 self-end text-[10px] text-[var(--color-on-surface-variant)]">

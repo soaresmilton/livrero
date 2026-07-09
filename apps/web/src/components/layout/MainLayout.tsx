@@ -1,52 +1,44 @@
-import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
-import { Menu, X } from 'lucide-react';
+import { BottomNav } from './BottomNav';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export function MainLayout() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   return (
-    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: 'var(--color-background)' }}>
-      {/* Desktop Sidebar */}
+    <div
+      className="flex h-screen overflow-hidden"
+      style={{ backgroundColor: 'var(--color-background)' }}
+    >
+      {/* Desktop sidebar — hidden on mobile */}
       <Sidebar />
 
-      {/* Mobile Sidebar Overlay */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex">
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
-          <div className="relative w-64 h-full flex flex-col shadow-xl" style={{ backgroundColor: 'var(--color-surface-container-high)' }}>
-            <button 
-              className="absolute top-4 right-4 p-2 text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <X size={20} />
-            </button>
-            <Sidebar />
-          </div>
-        </div>
-      )}
-
-      {/* Main Content Area */}
+      {/* Main content area */}
       <div className="flex-1 flex flex-col h-full overflow-hidden relative">
-        {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md z-40 sticky top-0">
-          <h1 className="text-xl font-bold" style={{ fontFamily: 'Source Serif 4, Georgia, serif', color: 'var(--color-on-surface)' }}>
-            Livrero
-          </h1>
-          <button 
-            className="p-2 -mr-2 text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-            onClick={() => setIsMobileMenuOpen(true)}
+        {/* Mobile header: logo + theme toggle. Navigation handled by BottomNav. */}
+        <header
+          className="md:hidden flex items-center justify-between px-4 h-14 shrink-0 border-b sticky top-0 z-30 backdrop-blur-md"
+          style={{
+            backgroundColor: 'color-mix(in srgb, var(--color-surface-container-high) 92%, transparent)',
+            borderColor: 'var(--color-outline-variant)',
+          }}
+        >
+          <span
+            className="text-xl font-bold font-serif tracking-tight"
+            style={{ color: 'var(--color-primary)' }}
           >
-            <Menu size={24} />
-          </button>
+            Livrero
+          </span>
+          <ThemeToggle />
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto w-full relative">
+        {/* Page content — extra bottom padding on mobile for BottomNav */}
+        <main className="flex-1 overflow-y-auto w-full relative pb-14 md:pb-0">
           <Outlet />
         </main>
       </div>
+
+      {/* Mobile bottom navigation */}
+      <BottomNav />
     </div>
   );
 }

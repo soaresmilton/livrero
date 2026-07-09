@@ -140,7 +140,7 @@ export const AddBookModal: React.FC<AddBookModalProps> = ({ isOpen, onClose, ini
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl shadow-xl border flex flex-col max-h-[90vh]" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-outline-variant)' }}>
+      <div className="w-full max-w-md rounded-2xl shadow-xl border flex flex-col max-h-[90dvh]" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-outline-variant)' }}>
         <div className="flex items-center justify-between border-b border-[var(--color-outline-variant)] px-6 py-4">
           <h2 className="text-xl font-semibold text-[var(--color-on-surface)]" style={{ fontFamily: 'Source Serif 4, Georgia, serif' }}>
             {initialData ? 'Editar Livro' : 'Adicionar Novo Livro'}

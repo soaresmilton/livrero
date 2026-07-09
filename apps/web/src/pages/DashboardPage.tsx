@@ -6,6 +6,8 @@ import { StatCard } from '@/features/dashboard/components/StatCard'
 import { CurrentBookCard } from '@/features/dashboard/components/CurrentBookCard'
 import { GoalsProgress } from '@/features/dashboard/components/GoalsProgress'
 import { ReadingHeatmap } from '@/features/dashboard/components/ReadingHeatmap'
+import { RunningHead } from '@/components/ui/RunningHead'
+import { Marginalia } from '@/components/ui/Marginalia'
 
 const CURRENT_YEAR = new Date().getFullYear()
 const YEARS = [CURRENT_YEAR, CURRENT_YEAR - 1, CURRENT_YEAR - 2]
@@ -24,14 +26,17 @@ export function DashboardPage() {
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1
-            className="text-3xl font-semibold tracking-tight text-[var(--color-on-surface)]"
-            style={{ fontFamily: 'Source Serif 4, Georgia, serif' }}
-          >
-            Bem-vindo(a) de volta, {user?.name?.split(' ')[0]} 👋
+          <RunningHead section="Painel" detail={year.toString()} />
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight font-serif">
+            Bem-vindo(a) de volta, {user?.name?.split(' ')[0]}
           </h1>
-          <p className="mt-2 text-[var(--color-on-surface-variant)]">
-            Seu refúgio de leitura em {year}.
+          <p className="mt-2" style={{ color: 'var(--color-on-surface-variant)' }}>
+            Seu refúgio de leitura em {year}.{' '}
+            {summary && (
+              <Marginalia>
+                {summary.completed_books_year} livro{summary.completed_books_year !== 1 ? 's' : ''} concluído{summary.completed_books_year !== 1 ? 's' : ''} neste ano
+              </Marginalia>
+            )}
           </p>
         </div>
 

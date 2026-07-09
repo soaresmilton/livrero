@@ -46,7 +46,9 @@ class SQLAlchemyBookRepository(BookRepository):
 
     async def update(self, book: Book) -> Book:
         result = await self._session.execute(
-            select(BookModel).where(BookModel.id == book.id)
+            select(BookModel)
+            .options(selectinload(BookModel.sessions))
+            .where(BookModel.id == book.id)
         )
         model = result.scalar_one_or_none()
         if not model:
@@ -65,8 +67,9 @@ class SQLAlchemyBookRepository(BookRepository):
         model.updated_at = book.updated_at
         model.finished_reading_at = book.finished_reading_at
 
+        self._session.add(model)
         await self._session.flush()
-        return book
+        return self._to_entity(model)
 
     async def delete(self, book_id: UUID) -> None:
         result = await self._session.execute(
