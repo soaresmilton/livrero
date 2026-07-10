@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { goalService } from '../services/goalService'
 import { UpsertGoalRequest } from '../types'
+import { toast } from '@/store/toastStore'
 
 export const useGoal = (year: number) => {
   return useQuery({
@@ -18,6 +19,10 @@ export const useUpsertGoal = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['goals', variables.year] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      toast.success('Reading goal saved')
+    },
+    onError: () => {
+      toast.error("Couldn't save your goal. Try again.")
     },
   })
 }

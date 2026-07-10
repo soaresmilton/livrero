@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { noteService } from '../services/noteService';
 import { SaveNoteRequest } from '../types/note';
+import { toast } from '@/store/toastStore';
 
 export const useRecentNotes = (limit: number = 10) => {
   return useQuery({
@@ -26,6 +27,9 @@ export const useSaveBookNote = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['notes', 'book', variables.bookId] });
       queryClient.invalidateQueries({ queryKey: ['notes', 'recent'] });
+    },
+    onError: () => {
+      toast.error("Couldn't save your note. Try again.");
     },
   });
 };
