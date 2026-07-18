@@ -152,7 +152,7 @@ test('BookCard triggers AbandonModal and confirms', async () => {
 test('BookCard calculates progress correctly', () => {
   const progressBook = { ...mockBook, status: 'READING' as BookStatus, current_page: 150, total_pages: 300 };
   renderWithRouter(<BookCard {...defaultProps} book={progressBook} />);
-  expect(screen.getByText('150 / 300 páginas (50%)')).toBeInTheDocument();
+  expect(screen.getByText('150 / 300 págs · 50%')).toBeInTheDocument();
 });
 
 test('BookCard renders correctly for READ status', () => {
