@@ -1,0 +1,652 @@
+/* ────────────────────────────────────────────────────────────────────────────
+   Landing "Marginália" · classes mg-*
+
+   Conceito: a landing page é uma página de livro tipografada. O usuário rola
+   e anotações manuscritas aparecem nas margens, revelando as funcionalidades
+   como se um leitor estivesse anotando enquanto lê.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* ── Tokens próprios ──────────────────────────────────────────────────────── */
+
+.mg-root {
+  --mg-paper:        #F2EDE5;
+  --mg-ink:          #2C2416;
+  --mg-ink-mid:      #5a4d3e;
+  --mg-ink-faint:    #9b8f83;
+  --mg-marginalia:   #7B4F2E;
+  --mg-highlight:    rgba(245, 226, 50, 0.38);
+  --mg-highlight-2:  rgba(147, 197, 114, 0.32);
+  --mg-rule:         rgba(44, 36, 22, 0.16);
+  --mg-col-width:    620px;
+  --mg-margin-width: 180px;
+  --mg-gap:          48px;
+
+  background: var(--mg-paper);
+  color: var(--mg-ink);
+  font-family: var(--font-serif);
+  min-height: 100vh;
+}
+
+/* Dark mode */
+.dark .mg-root {
+  --mg-paper:        #1C1712;
+  --mg-ink:          #E8D9C4;
+  --mg-ink-mid:      #b8a99a;
+  --mg-ink-faint:    #7a6e65;
+  --mg-marginalia:   #D4956A;
+  --mg-highlight:    rgba(200, 160, 40, 0.28);
+  --mg-highlight-2:  rgba(100, 160, 80, 0.25);
+  --mg-rule:         rgba(232, 217, 196, 0.12);
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.mg-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: color-mix(in srgb, var(--mg-paper) 90%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--mg-rule);
+}
+
+.mg-wordmark {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  color: var(--mg-ink);
+  text-decoration: none;
+}
+
+.mg-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mg-login-link {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mg-ink-mid);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: color 140ms ease, background 140ms ease;
+}
+
+.mg-login-link:hover {
+  color: var(--mg-ink);
+  background: var(--mg-rule);
+}
+
+/* ── Dot nav lateral ─────────────────────────────────────────────────────── */
+
+.mg-side-nav {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--mg-ink-faint);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.mg-dot:hover {
+  border-color: var(--mg-marginalia);
+  transform: scale(1.25);
+}
+
+.mg-dot--active {
+  background: var(--mg-marginalia);
+  border-color: var(--mg-marginalia);
+}
+
+/* ── Página do livro ─────────────────────────────────────────────────────── */
+
+.mg-book {
+  max-width: calc(var(--mg-col-width) + var(--mg-margin-width) * 2 + var(--mg-gap) * 2);
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* ── Seção — layout 3 colunas ────────────────────────────────────────────── */
+
+.mg-section {
+  display: grid;
+  grid-template-columns: var(--mg-margin-width) var(--mg-col-width) var(--mg-margin-width);
+  gap: 0 var(--mg-gap);
+  padding: 80px 0;
+  align-items: start;
+}
+
+.mg-section--faq {
+  grid-template-columns: 1fr;
+}
+
+.mg-section--closing {
+  align-items: center;
+  gap: 0 64px;
+}
+
+/* ── Coluna de texto ─────────────────────────────────────────────────────── */
+
+.mg-text {
+  grid-column: 2;
+}
+
+.mg-text--wide {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ── Margens ─────────────────────────────────────────────────────────────── */
+
+.mg-margin {
+  display: flex;
+  flex-direction: column;
+  padding-top: 80px; /* alinha com o primeiro parágrafo */
+}
+
+.mg-margin--left  { grid-column: 1; align-items: flex-end; }
+.mg-margin--right { grid-column: 3; align-items: flex-start; }
+
+/* ── Anotações manuscritas ───────────────────────────────────────────────── */
+
+.mg-annotation {
+  font-family: var(--font-handwriting);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--mg-marginalia);
+  max-width: 160px;
+  position: relative;
+
+  /* Estado inicial: invisível */
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 600ms ease, transform 600ms ease;
+}
+
+.mg-annotation.mg-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Variante: texto enfatizado (maior, com mais peso) */
+.mg-annotation--emphasized {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Variante: caixa de nota */
+.mg-annotation--box {
+  border: 1.5px solid var(--mg-marginalia);
+  border-radius: 2px;
+  padding: 8px 10px;
+}
+
+/* Variante: recurso (feature list) */
+.mg-annotation--feature {
+  font-size: 13.5px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+
+.mg-annotation--feature.mg-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.mg-margin--right .mg-annotation--feature {
+  transform: translateX(8px);
+}
+
+.mg-margin--right .mg-annotation--feature.mg-visible {
+  transform: translateX(0);
+}
+
+/* ── Grifos ─────────────────────────────────────────────────────────────── */
+
+.mg-mark {
+  background: var(--mg-highlight);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+
+  /* Estado inicial */
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(var(--mg-highlight), var(--mg-highlight));
+  transition: background-size 600ms ease;
+}
+
+.mg-mark.mg-visible {
+  background-size: 100% 100%;
+}
+
+/* ── Tipografia editorial ─────────────────────────────────────────────────── */
+
+.mg-eyebrow {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--mg-ink-faint);
+  margin: 0 0 16px;
+}
+
+.mg-title {
+  margin: 0 0 40px;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(52px, 7vw, 88px);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--mg-ink);
+}
+
+.mg-running {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mg-ink-faint);
+  margin: 0 0 12px;
+}
+
+.mg-chapter {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--mg-ink);
+  margin: 0 0 32px;
+}
+
+/* Corpo do texto: estilo livro real */
+.mg-prose {
+  font-size: 18px;
+  line-height: 1.85;
+  color: var(--mg-ink);
+  margin: 0;
+  text-indent: 1.5em;
+}
+
+.mg-prose + .mg-prose {
+  margin-top: 0; /* sangria substitui espaçamento */
+}
+
+.mg-prose--lead {
+  text-indent: 0; /* primeiro parágrafo nunca tem sangria */
+  margin-bottom: 0;
+}
+
+.mg-prose--closing {
+  font-size: 19px;
+  font-style: italic;
+  text-indent: 0;
+  color: var(--mg-ink-mid);
+  line-height: 1.9;
+}
+
+/* Letra capitular */
+.mg-dropcap {
+  float: left;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 58px;
+  line-height: 0.78;
+  padding: 6px 8px 0 0;
+  color: var(--mg-ink);
+}
+
+/* Linha divisória */
+.mg-rule {
+  border: none;
+  border-top: 1px solid var(--mg-rule);
+  margin: 0;
+}
+
+/* ── FAQ ─────────────────────────────────────────────────────────────────── */
+
+.mg-faq {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--mg-rule);
+}
+
+.mg-faq-item {
+  border-bottom: 1px solid var(--mg-rule);
+}
+
+.mg-faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--mg-ink);
+  list-style: none;
+}
+
+.mg-faq-item summary::-webkit-details-marker { display: none; }
+
+.mg-faq-item summary::after {
+  content: '+';
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 22px;
+  color: var(--mg-ink-faint);
+  transition: transform 200ms ease;
+  flex-shrink: 0;
+}
+
+.mg-faq-item[open] summary::after { transform: rotate(45deg); }
+
+.mg-faq-item p {
+  margin: 0 0 20px;
+  font-size: 15.5px;
+  line-height: 26px;
+  color: var(--mg-ink-mid);
+}
+
+/* ── Nota adesiva — CTA ──────────────────────────────────────────────────── */
+
+.mg-sticky-note {
+  background: #FEF08A;
+  color: #3a3000;
+  padding: 28px 28px 32px;
+  border-radius: 2px;
+  box-shadow:
+    2px 3px 8px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  transform: rotate(1.5deg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  max-width: 220px;
+  flex-shrink: 0;
+
+  opacity: 0;
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+.mg-sticky-note.mg-visible {
+  opacity: 1;
+}
+
+.dark .mg-sticky-note {
+  background: #4a3e00;
+  color: #fef3b0;
+  box-shadow: 2px 3px 12px rgba(0, 0, 0, 0.4);
+}
+
+.mg-sticky-heading {
+  font-family: var(--font-handwriting);
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.mg-sticky-cta {
+  display: inline-block;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: filter 140ms ease;
+  white-space: nowrap;
+}
+
+.mg-sticky-cta:hover { filter: brightness(1.1); }
+
+.mg-sticky-fine {
+  font-family: var(--font-handwriting);
+  font-size: 13px;
+  color: currentColor;
+  opacity: 0.65;
+}
+
+/* ── Colofão ─────────────────────────────────────────────────────────────── */
+
+.mg-colophon {
+  border-top: 1px solid var(--mg-rule);
+  margin-top: 80px;
+  padding-top: 0;
+  background: color-mix(in srgb, var(--mg-ink) 5%, transparent);
+}
+
+.mg-colophon-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 48px;
+  max-width: calc(var(--mg-col-width) + var(--mg-margin-width) * 2 + var(--mg-gap) * 2);
+  margin: 0 auto;
+  padding: 64px 80px 48px;
+}
+
+.mg-colophon-brand {
+  display: block;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--mg-ink);
+  margin-bottom: 10px;
+}
+
+.mg-colophon-note {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--mg-ink-mid);
+  margin: 0 0 20px;
+}
+
+.mg-colophon-cta {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 6px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  text-decoration: none;
+  transition: opacity 140ms ease;
+}
+
+.mg-colophon-cta:hover { opacity: 0.88; }
+
+.mg-colophon-heading {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mg-ink-faint);
+  margin-bottom: 14px;
+}
+
+.mg-colophon-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mg-colophon-links button {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  color: var(--mg-ink-mid);
+  width: fit-content;
+  transition: color 140ms ease;
+}
+
+.mg-colophon-links button:hover { color: var(--mg-ink); }
+
+.mg-newsletter {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.mg-newsletter input {
+  flex: 1;
+  min-width: 0;
+  border-radius: 6px;
+  border: 1px solid var(--mg-rule);
+  background: color-mix(in srgb, var(--mg-paper) 60%, transparent);
+  color: var(--mg-ink);
+  padding: 9px 12px;
+  font-size: 13.5px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.mg-newsletter input::placeholder { color: var(--mg-ink-faint); }
+
+.mg-newsletter input:focus { border-color: var(--color-primary); }
+
+.mg-colophon-fine {
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--mg-ink-faint);
+  font-family: var(--font-serif);
+}
+
+.mg-colophon-bottom {
+  max-width: calc(var(--mg-col-width) + var(--mg-margin-width) * 2 + var(--mg-gap) * 2);
+  margin: 0 auto;
+  padding: 20px 80px;
+  border-top: 1px solid var(--mg-rule);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--mg-ink-faint);
+}
+
+/* ── Responsividade ──────────────────────────────────────────────────────── */
+
+/* Margens menores em telas médias */
+@media (max-width: 1100px) {
+  .mg-root {
+    --mg-margin-width: 120px;
+    --mg-gap: 32px;
+  }
+
+  .mg-book { padding: 0 24px; }
+}
+
+/* Sem margens em mobile — anotações aparecem abaixo do parágrafo */
+@media (max-width: 800px) {
+  .mg-root {
+    --mg-margin-width: 0px;
+    --mg-gap: 0px;
+  }
+
+  .mg-side-nav { display: none; }
+
+  .mg-header { padding: 0 16px; }
+
+  .mg-login-link { display: none; }
+
+  .mg-book { padding: 0 20px; }
+
+  .mg-section {
+    grid-template-columns: 1fr;
+    padding: 56px 0;
+  }
+
+  .mg-margin {
+    padding-top: 0;
+    margin-top: 24px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .mg-margin--left  { grid-row: 2; align-items: flex-start; }
+  .mg-margin--right { grid-column: 1; grid-row: 2; align-items: flex-start; }
+
+  .mg-text { grid-column: 1; grid-row: 1; }
+
+  .mg-annotation {
+    max-width: none;
+    font-size: 14px;
+  }
+
+  .mg-annotation--box { display: inline-block; }
+
+  .mg-title { font-size: clamp(40px, 12vw, 64px); }
+
+  .mg-prose { font-size: 16px; line-height: 1.75; }
+
+  .mg-dropcap { font-size: 44px; }
+
+  .mg-section--closing {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 40px;
+  }
+
+  .mg-sticky-note { transform: rotate(0.5deg); }
+
+  .mg-colophon-grid {
+    grid-template-columns: 1fr;
+    padding: 48px 20px 32px;
+    gap: 32px;
+  }
+
+  .mg-colophon-bottom { padding: 20px; }
+}
+
+/* ── Reduzir movimento ───────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-annotation,
+  .mg-annotation--feature,
+  .mg-mark,
+  .mg-sticky-note {
+    transition: opacity 200ms ease;
+    transform: none !important;
+  }
+}

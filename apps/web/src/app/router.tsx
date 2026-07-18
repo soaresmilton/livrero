@@ -11,9 +11,11 @@ import { SessionPage } from '@/pages/SessionPage'
 import { SessionsIndexPage } from '@/pages/SessionsIndexPage'
 import { NotesDashboardPage } from '@/pages/NotesDashboardPage'
 import { BookNotesPage } from '@/pages/BookNotesPage'
+import { LandingPage } from '@/pages/LandingPage'
 
 const router = createBrowserRouter([
   // Public routes
+  { path: '/', element: <LandingPage /> },
   { path: '/login', element: <LoginPage /> },
   { path: '/register', element: <RegisterPage /> },
   { path: '/forgot-password', element: <ForgotPasswordPage /> },
@@ -32,7 +34,6 @@ const router = createBrowserRouter([
           { path: '/sessions/:id', element: <SessionPage /> },
           { path: '/notes', element: <NotesDashboardPage /> },
           { path: '/library/:bookId/notes', element: <BookNotesPage /> },
-          { path: '/', element: <DashboardPage /> },
         ]
       }
     ],
