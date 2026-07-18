@@ -24,27 +24,27 @@ docker compose up --build
 # Health Check: http://localhost:8000/api/v1/health
 ```
 
-### Backend (Python 3.12+)
+### Backend (Python 3.11+)
 ```bash
 cd apps/api
 
-# Install dev dependencies
-pip install -e ".[dev]"
+# Install dependencies using uv (modern Python package manager)
+uv sync
 
 # Lint with ruff
-ruff check .
+uv run ruff check .
 
 # Format with ruff
-ruff format .
+uv run ruff format .
 
 # Run tests with coverage
-pytest --cov=app --cov-report=term-missing
+uv run pytest --cov=app --cov-report=term-missing
 
 # Run single test
-pytest tests/test_file.py::test_function -v
+uv run pytest tests/test_file.py::test_function -v
 
 # Start dev server (requires DATABASE_URL env var)
-uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload
 ```
 
 ### Frontend (Node.js 20+)
@@ -104,15 +104,17 @@ shared/              # Exceptions, utilities, constants
 ### Frontend: Feature-Based Architecture (apps/web/src)
 ```
 app/                 # Providers, routing, app setup
-├── providers.tsx    # React Query, Zustand, TanStack Router setup
-└── router.tsx       # Route definitions
+├── providers.tsx    # React Query, Zustand providers setup
+└── router.tsx       # React Router DOM route definitions
 pages/               # Top-level page components
-features/            # Feature modules (auth, books, sessions, notes)
+features/            # Feature modules (auth, books, sessions, notes, goals, dashboard)
 ├── auth/            # Authentication feature
 ├── books/           # Book management
 ├── sessions/        # Reading sessions
-└── notes/           # Markdown notes
-components/          # Shared/reusable UI components
+├── notes/           # Markdown notes
+├── goals/           # Reading goals
+└── dashboard/       # Dashboard statistics and visualizations
+components/          # Shared/reusable UI components (layout, buttons, inputs, modals)
 hooks/               # Custom React hooks
 services/            # API client functions (axios-based)
 store/               # Zustand state management stores
@@ -121,7 +123,7 @@ test-utils/          # Test setup and helpers
 ```
 
 **Key Principles**:
-- **TanStack Router**: File-based routing for type-safe navigation
+- **React Router DOM**: Client-side routing with createBrowserRouter
 - **React Query**: Server state management for API calls; Zustand for client state
 - **Composition Pattern**: Build features from smaller components
 - **Test Coverage**: Vitest + React Testing Library; aim for 80%+ coverage on features
@@ -130,12 +132,13 @@ test-utils/          # Test setup and helpers
 
 | Layer       | Technology                                  | Notes                                         |
 |-------------|---------------------------------------------|-----------------------------------------------|
-| Frontend    | React 19, TypeScript 5.8, Vite 6            | Server-side rendering via SSR not in scope    |
-| Styling     | TailwindCSS, Material Design 3 color system | Colors in `docs/DESIGN.md`                    |
-| State       | TanStack Query, Zustand                     | React Query for server state, Zustand for UI  |
-| Routing     | TanStack Router                             | Type-safe file-based routing                  |
+| Frontend    | React 19, TypeScript 5.8, Vite 6.3+         | Server-side rendering via SSR not in scope    |
+| Styling     | TailwindCSS + @tailwindcss/vite, Material Design 3 | Colors in `docs/DESIGN.md`; vite plugin for optimal build |
+| State       | React Query, Zustand                        | React Query for server state, Zustand for UI  |
+| Routing     | React Router DOM                            | Client-side routing with createBrowserRouter  |
 | Markdown    | react-markdown with remark plugins          | GFM syntax support (tables, strikethrough)    |
-| Backend     | FastAPI 0.115+, Python 3.12                 | Async-first design with asyncio               |
+| Backend     | FastAPI 0.115+, Python 3.11+                | Async-first design with asyncio               |
+| Package Mgmt| uv                                          | Modern Python package manager; faster & reliable |
 | Database    | PostgreSQL 16, SQLAlchemy 2.0 (async)       | Pydantic v2 for ORM validation                |
 | Migrations  | Alembic                                     | Located in `apps/api/alembic/`                |
 | Auth        | JWT (python-jose), bcrypt hashing           | Configurable via `SECRET_KEY` env var         |
@@ -155,6 +158,34 @@ DEBUG=true
 ```
 VITE_API_URL=http://localhost:8000
 ```
+
+## Dependency Management
+
+### Backend (uv)
+The project uses **uv** — a modern, fast Python package manager written in Rust. It replaces `pip` with better performance and reliability.
+
+```bash
+cd apps/api
+
+# Install all dependencies (including dev)
+uv sync
+
+# Add a new package
+uv add package-name
+
+# Add a dev-only package
+uv add --dev package-name
+
+# Remove a package
+uv remove package-name
+
+# Run commands in the venv
+uv run python script.py
+uv run pytest
+uv run uvicorn app.main:app --reload
+```
+
+See [uv documentation](https://docs.astral.sh/uv/) for advanced usage.
 
 ## Common Development Tasks
 
@@ -184,12 +215,12 @@ alembic downgrade -1
 6. Add tests in `tests/`
 
 ### Adding a New Page/Feature (Frontend)
-1. Create feature folder in `src/features/` with `pages/`, `hooks/`, `services/`, `types/`
-2. Define React Query hooks in `hooks/useFeatureName.ts`
-3. Add service functions in `services/featureName.ts`
-4. Create feature page component in `pages/`
-5. Register route in `app/router.tsx`
-6. Write tests for components and hooks in `*.spec.ts` files
+1. Create feature folder in `src/features/` with `components/`, `hooks/`, `services/`, `types/`
+2. Define React Query hooks in `hooks/useFeatureName.ts` (use `useQuery`/`useMutation`)
+3. Add service functions in `services/featureName.ts` (axios-based API calls)
+4. Create feature components in `components/` and page wrapper in `pages/`
+5. Register route in `app/router.tsx` (use React Router DOM createElement)
+6. Write tests for components and hooks in `*.spec.ts` files using Vitest + React Testing Library
 
 ### Running Tests in CI
 The CI pipeline (`.github/workflows/ci.yml`) runs:
@@ -309,7 +340,8 @@ npm test -- -u
 ### Frontend Build
 - Vite dev server is fast; use `npm run dev` during development
 - TypeScript build step (`tsc -b`) is part of production build; fix type errors before building
-- TailwindCSS is compiled at build time; all class names must be static strings (not dynamic)
+- TailwindCSS uses `@tailwindcss/vite` plugin for optimal HMR and build performance
+- All class names must be static strings (not dynamic) for TailwindCSS to scan and compile
 
 ### Open Library Integration
 - Book search uses Open Library API (free, no auth required)
@@ -317,9 +349,10 @@ npm test -- -u
 - Gracefully handle API timeouts; don't block user workflows
 
 ### State Management Strategy
-- **Server State** (API data): TanStack Query handles caching, invalidation, background refetch
-- **Client State** (UI state): Zustand stores for filters, modals, theme; keep minimal
+- **Server State** (API data): React Query (TanStack Query) handles caching, invalidation, background refetch
+- **Client State** (UI state): Zustand stores for auth, filters, UI toggles; keep minimal and focused
 - **Local State** (form inputs): React hooks + react-hook-form; don't hoist to Zustand unnecessarily
+- **Routing State**: React Router DOM manages navigation and route parameters via useParams/useNavigate
 
 ## Git Workflow
 
@@ -357,11 +390,12 @@ The `.github/workflows/ci.yml` runs on every `push` to `dev`/`main` and on PR to
 
 **Backend Job**:
 1. Checkout code
-2. Set up Python 3.12
-3. Install dependencies
-4. Run `ruff check .`
-5. Run `ruff format --check .`
-6. Run `pytest --cov=app --cov-report=term-missing` (requires `SECRET_KEY` env var)
+2. Install uv package manager
+3. Set up Python 3.12
+4. Install dependencies with `uv sync --frozen`
+5. Run `uv run ruff check .`
+6. Run `uv run ruff format --check .`
+7. Run `uv run pytest --cov=app --cov-report=term-missing` (requires `SECRET_KEY` env var)
 
 **Frontend Job**:
 1. Checkout code
@@ -381,7 +415,152 @@ The `.github/workflows/ci.yml` runs on every `push` to `dev`/`main` and on PR to
 - **Backlog**: See `docs/backlog.md` for prioritized work items
 - **FastAPI Docs**: https://fastapi.tiangolo.com/
 - **React Docs**: https://react.dev/
+- **React Router**: https://reactrouter.com/
+- **Axios**: https://axios-http.com/
+- **React Hook Form**: https://react-hook-form.com/
 - **SQLAlchemy 2.0**: https://docs.sqlalchemy.org/20/
 - **Alembic**: https://alembic.sqlalchemy.org/
-- **TanStack Query**: https://tanstack.com/query/
+- **React Query (TanStack Query)**: https://tanstack.com/query/
 - **Zustand**: https://github.com/pmndrs/zustand
+- **uv Package Manager**: https://docs.astral.sh/uv/
+- **Vite**: https://vitejs.dev/
+- **TailwindCSS**: https://tailwindcss.com/
+
+<!-- rtk-instructions v2 -->
+# RTK (Rust Token Killer) - Token-Optimized Commands
+
+## Golden Rule
+
+**Always prefix commands with `rtk`**. If RTK has a dedicated filter, it uses it. If not, it passes through unchanged. This means RTK is always safe to use.
+
+**Important**: Even in command chains with `&&`, use `rtk`:
+```bash
+# ❌ Wrong
+git add . && git commit -m "msg" && git push
+
+# ✅ Correct
+rtk git add . && rtk git commit -m "msg" && rtk git push
+```
+
+## RTK Commands by Workflow
+
+### Build & Compile (80-90% savings)
+```bash
+rtk cargo build         # Cargo build output
+rtk cargo check         # Cargo check output
+rtk cargo clippy        # Clippy warnings grouped by file (80%)
+rtk tsc                 # TypeScript errors grouped by file/code (83%)
+rtk lint                # ESLint/Biome violations grouped (84%)
+rtk prettier --check    # Files needing format only (70%)
+rtk next build          # Next.js build with route metrics (87%)
+```
+
+### Test (60-99% savings)
+```bash
+rtk cargo test          # Cargo test failures only (90%)
+rtk go test             # Go test failures only (90%)
+rtk jest                # Jest failures only (99.5%)
+rtk vitest              # Vitest failures only (99.5%)
+rtk playwright test     # Playwright failures only (94%)
+rtk pytest              # Python test failures only (90%)
+rtk rake test           # Ruby test failures only (90%)
+rtk rspec               # RSpec test failures only (60%)
+rtk test <cmd>          # Generic test wrapper - failures only
+```
+
+### Git (59-80% savings)
+```bash
+rtk git status          # Compact status
+rtk git log             # Compact log (works with all git flags)
+rtk git diff            # Compact diff (80%)
+rtk git show            # Compact show (80%)
+rtk git add             # Ultra-compact confirmations (59%)
+rtk git commit          # Ultra-compact confirmations (59%)
+rtk git push            # Ultra-compact confirmations
+rtk git pull            # Ultra-compact confirmations
+rtk git branch          # Compact branch list
+rtk git fetch           # Compact fetch
+rtk git stash           # Compact stash
+rtk git worktree        # Compact worktree
+```
+
+Note: Git passthrough works for ALL subcommands, even those not explicitly listed.
+
+### GitHub (26-87% savings)
+```bash
+rtk gh pr view <num>    # Compact PR view (87%)
+rtk gh pr checks        # Compact PR checks (79%)
+rtk gh run list         # Compact workflow runs (82%)
+rtk gh issue list       # Compact issue list (80%)
+rtk gh api              # Compact API responses (26%)
+```
+
+### JavaScript/TypeScript Tooling (70-90% savings)
+```bash
+rtk pnpm list           # Compact dependency tree (70%)
+rtk pnpm outdated       # Compact outdated packages (80%)
+rtk pnpm install        # Compact install output (90%)
+rtk npm run <script>    # Compact npm script output
+rtk npx <cmd>           # Compact npx command output
+rtk prisma              # Prisma without ASCII art (88%)
+```
+
+### Files & Search (60-75% savings)
+```bash
+rtk ls <path>           # Tree format, compact (65%)
+rtk read <file>         # Code reading with filtering (60%)
+rtk grep <pattern>      # Search grouped by file (75%). Format flags (-c, -l, -L, -o, -Z) run raw.
+rtk find <pattern>      # Find grouped by directory (70%)
+```
+
+### Analysis & Debug (70-90% savings)
+```bash
+rtk err <cmd>           # Filter errors only from any command
+rtk log <file>          # Deduplicated logs with counts
+rtk json <file>         # JSON structure without values
+rtk deps                # Dependency overview
+rtk env                 # Environment variables compact
+rtk summary <cmd>       # Smart summary of command output
+rtk diff                # Ultra-compact diffs
+```
+
+### Infrastructure (85% savings)
+```bash
+rtk docker ps           # Compact container list
+rtk docker images       # Compact image list
+rtk docker logs <c>     # Deduplicated logs
+rtk kubectl get         # Compact resource list
+rtk kubectl logs        # Deduplicated pod logs
+```
+
+### Network (65-70% savings)
+```bash
+rtk curl <url>          # Compact HTTP responses (70%)
+rtk wget <url>          # Compact download output (65%)
+```
+
+### Meta Commands
+```bash
+rtk gain                # View token savings statistics
+rtk gain --history      # View command history with savings
+rtk discover            # Analyze Claude Code sessions for missed RTK usage
+rtk proxy <cmd>         # Run command without filtering (for debugging)
+rtk init                # Add RTK instructions to CLAUDE.md
+rtk init --global       # Add RTK to ~/.claude/CLAUDE.md
+```
+
+## Token Savings Overview
+
+| Category | Commands | Typical Savings |
+|----------|----------|-----------------|
+| Tests | vitest, playwright, cargo test | 90-99% |
+| Build | next, tsc, lint, prettier | 70-87% |
+| Git | status, log, diff, add, commit | 59-80% |
+| GitHub | gh pr, gh run, gh issue | 26-87% |
+| Package Managers | pnpm, npm, npx | 70-90% |
+| Files | ls, read, grep, find | 60-75% |
+| Infrastructure | docker, kubectl | 85% |
+| Network | curl, wget | 65-70% |
+
+Overall average: **60-90% token reduction** on common development operations.
+<!-- /rtk-instructions -->

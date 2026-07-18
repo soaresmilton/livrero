@@ -9,6 +9,7 @@ Create Date: 2026-07-17 10:00:00.000000+00:00
 from collections.abc import Sequence
 
 import sqlalchemy as sa
+from sqlalchemy import inspect
 
 from alembic import op
 
@@ -19,12 +20,22 @@ branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
+def _has_column(table: str, column: str) -> bool:
+    bind = op.get_bind()
+    columns = inspect(bind).get_columns(table)
+    return any(c["name"] == column for c in columns)
+
+
 def upgrade() -> None:
-    op.add_column(
-        "books",
-        sa.Column("finished_reading_at", sa.DateTime(timezone=True), nullable=True),
-    )
+    # finished_reading_at was added manually on some databases before this
+    # migration existed, so guard the add to keep the upgrade idempotent.
+    if not _has_column("books", "finished_reading_at"):
+        op.add_column(
+            "books",
+            sa.Column("finished_reading_at", sa.DateTime(timezone=True), nullable=True),
+        )
 
 
 def downgrade() -> None:
-    op.drop_column("books", "finished_reading_at")
+    if _has_column("books", "finished_reading_at"):
+        op.drop_column("books", "finished_reading_at")
