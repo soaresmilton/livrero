@@ -28,7 +28,9 @@ class BookModel(Base):
     total_pages: Mapped[int | None] = mapped_column(Integer, nullable=True)
     cover_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     isbn: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    genres: Mapped[list] = mapped_column(ARRAY(String), default=list, server_default="{}")
+    genres: Mapped[list] = mapped_column(
+        ARRAY(String), default=list, server_default="{}"
+    )
     rating: Mapped[float | None] = mapped_column(Float, nullable=True)
     status: Mapped[BookStatus] = mapped_column(
         Enum(BookStatus, name="book_status_enum", create_type=False), nullable=False
