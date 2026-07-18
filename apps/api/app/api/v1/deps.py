@@ -24,6 +24,7 @@ async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     session: AsyncSession = Depends(get_session),
 ) -> User:
+    """Resolve the authenticated user from the request's bearer access token."""
     try:
         payload = decode_access_token(credentials.credentials)
         user_id = UUID(payload["sub"])
@@ -40,14 +41,17 @@ async def get_current_user(
 
 
 def get_book_repository(session: AsyncSession = Depends(get_session)) -> BookRepository:
+    """Provide a SQLAlchemy-backed BookRepository for dependency injection."""
     return SQLAlchemyBookRepository(session)
 
 
 def get_open_library() -> OpenLibraryIntegration:
+    """Provide an OpenLibraryIntegration instance for dependency injection."""
     return OpenLibraryIntegration()
 
 
 def get_note_repository(session: AsyncSession = Depends(get_session)):
+    """Provide a SQLAlchemy-backed ReadingNoteRepository for dependency injection."""
     from app.infrastructure.persistence.repositories.reading_note_repository import (
         SQLAlchemyReadingNoteRepository,
     )
@@ -56,6 +60,7 @@ def get_note_repository(session: AsyncSession = Depends(get_session)):
 
 
 def get_goal_repository(session: AsyncSession = Depends(get_session)):
+    """Provide a SQLAlchemy-backed ReadingGoalRepository for dependency injection."""
     from app.infrastructure.persistence.repositories.reading_goal_repository import (
         SQLAlchemyReadingGoalRepository,
     )
@@ -64,6 +69,7 @@ def get_goal_repository(session: AsyncSession = Depends(get_session)):
 
 
 def get_stats_repository(session: AsyncSession = Depends(get_session)):
+    """Provide a SQLAlchemy-backed SQLAlchemyStatsRepository for dependency injection."""
     from app.infrastructure.persistence.repositories.stats_repository import (
         SQLAlchemyStatsRepository,
     )

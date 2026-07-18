@@ -5,6 +5,8 @@ from app.domain.entities.reading_goal import ReadingGoal
 
 
 class ReadingGoalRepository(abc.ABC):
+    """Repository interface for persisting and querying reading goals."""
+
     @abc.abstractmethod
     async def get_by_user_year(
         self, user_id: uuid.UUID, year: int

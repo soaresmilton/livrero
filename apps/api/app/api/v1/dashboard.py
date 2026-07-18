@@ -18,6 +18,7 @@ router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
 
 def _current_year() -> int:
+    """Return the current UTC calendar year."""
     return datetime.now(UTC).year
 
 
@@ -25,6 +26,7 @@ def _use_case(
     stats_repo: SQLAlchemyStatsRepository,
     goal_repo: ReadingGoalRepository,
 ) -> GetDashboardUseCase:
+    """Build a GetDashboardUseCase from the given repositories."""
     return GetDashboardUseCase(stats_repo=stats_repo, goal_repo=goal_repo)
 
 

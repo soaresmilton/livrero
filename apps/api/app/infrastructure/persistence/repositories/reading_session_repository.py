@@ -11,10 +11,13 @@ from app.infrastructure.persistence.models.reading_session_model import (
 
 
 class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
+    """SQLAlchemy implementation of the ReadingSessionRepository interface."""
+
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
     async def create(self, session: ReadingSession) -> ReadingSession:
+        """Insert a new reading session row and return the domain entity."""
         model = ReadingSessionModel(
             id=session.id,
             user_id=session.user_id,
@@ -33,6 +36,7 @@ class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
         return session
 
     async def update(self, session: ReadingSession) -> ReadingSession:
+        """Persist changes from the domain entity onto the existing row."""
         result = await self._session.execute(
             select(ReadingSessionModel).where(ReadingSessionModel.id == session.id)
         )
@@ -51,6 +55,7 @@ class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
         return session
 
     async def get_by_id(self, session_id: UUID) -> ReadingSession | None:
+        """Fetch a reading session by its id, or None if not found."""
         result = await self._session.execute(
             select(ReadingSessionModel).where(ReadingSessionModel.id == session_id)
         )
@@ -60,6 +65,7 @@ class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
     async def list_by_book(
         self, book_id: UUID, limit: int, offset: int
     ) -> tuple[list[ReadingSession], int]:
+        """List reading sessions for a book, most recent first, paginated."""
         query = select(ReadingSessionModel).where(
             ReadingSessionModel.book_id == book_id
         )
@@ -79,6 +85,7 @@ class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
         return [self._to_entity(model) for model in models], total
 
     async def get_active_session(self, user_id: UUID) -> ReadingSession | None:
+        """Fetch the user's currently in-progress session (no end_time), if any."""
         result = await self._session.execute(
             select(ReadingSessionModel).where(
                 ReadingSessionModel.user_id == user_id,
@@ -89,6 +96,7 @@ class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
         return self._to_entity(model) if model else None
 
     async def delete(self, session_id: UUID) -> None:
+        """Hard-delete a reading session by its id."""
         result = await self._session.execute(
             select(ReadingSessionModel).where(ReadingSessionModel.id == session_id)
         )
@@ -99,6 +107,7 @@ class SQLAlchemyReadingSessionRepository(ReadingSessionRepository):
 
     @staticmethod
     def _to_entity(model: ReadingSessionModel) -> ReadingSession:
+        """Map an ORM ReadingSessionModel to a ReadingSession domain entity."""
         return ReadingSession(
             id=model.id,
             user_id=model.user_id,

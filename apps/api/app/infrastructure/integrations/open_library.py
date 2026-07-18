@@ -6,9 +6,12 @@ from app.application.dto.book_dto import OpenLibraryBookResponse
 
 
 class OpenLibraryIntegration:
+    """Client for searching book metadata via the Open Library API."""
+
     BASE_URL = "https://openlibrary.org/search.json"
 
     async def search(self, query: str, limit: int = 5) -> list[OpenLibraryBookResponse]:
+        """Search Open Library for books matching the query, capped at limit results."""
         encoded_query = quote(query)
         url = f"{self.BASE_URL}?q={encoded_query}&limit={limit}"
 

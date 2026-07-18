@@ -10,10 +10,13 @@ from app.infrastructure.persistence.models.book_model import BookModel
 
 
 class SQLAlchemyBookRepository(BookRepository):
+    """SQLAlchemy implementation of the BookRepository interface."""
+
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
     async def create(self, book: Book) -> Book:
+        """Insert a new book row and return the domain entity."""
         model = BookModel(
             id=book.id,
             user_id=book.user_id,
@@ -36,6 +39,7 @@ class SQLAlchemyBookRepository(BookRepository):
         return book
 
     async def get_by_id(self, book_id: UUID) -> Book | None:
+        """Fetch a book with its sessions eagerly loaded, or None if not found."""
         result = await self._session.execute(
             select(BookModel)
             .options(selectinload(BookModel.sessions))
@@ -45,6 +49,7 @@ class SQLAlchemyBookRepository(BookRepository):
         return self._to_entity(model) if model else None
 
     async def update(self, book: Book) -> Book:
+        """Persist changes from the domain entity onto the existing row."""
         result = await self._session.execute(
             select(BookModel)
             .options(selectinload(BookModel.sessions))
@@ -72,6 +77,7 @@ class SQLAlchemyBookRepository(BookRepository):
         return self._to_entity(model)
 
     async def delete(self, book_id: UUID) -> None:
+        """Soft-delete a book by marking it deleted and stamping deleted_at."""
         result = await self._session.execute(
             select(BookModel).where(BookModel.id == book_id)
         )
@@ -89,6 +95,7 @@ class SQLAlchemyBookRepository(BookRepository):
         status: BookStatus | None = None,
         search_query: str | None = None,
     ) -> tuple[list[Book], int]:
+        """List non-deleted books for a user, filtered and paginated."""
         query = (
             select(BookModel)
             .options(selectinload(BookModel.sessions))
@@ -120,6 +127,7 @@ class SQLAlchemyBookRepository(BookRepository):
 
     @staticmethod
     def _to_entity(model: BookModel) -> Book:
+        """Map an ORM BookModel (with optional loaded sessions) to a Book entity."""
         current_page = 0
         started_reading_at = None
         total_reading_time = 0

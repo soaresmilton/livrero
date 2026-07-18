@@ -9,6 +9,8 @@ from app.shared.exceptions import LivreroError
 
 
 class ResetPassword:
+    """Use case for completing a password reset using a valid reset token."""
+
     def __init__(
         self,
         user_repository: UserRepository,
@@ -18,6 +20,7 @@ class ResetPassword:
         self._reset_tokens = reset_token_repository
 
     async def execute(self, request: ResetPasswordRequest) -> MessageResponse:
+        """Validate the reset token and set the user's new password."""
         token_hash = hashlib.sha256(request.token.encode()).hexdigest()
         token = await self._reset_tokens.find_by_hash(token_hash)
 

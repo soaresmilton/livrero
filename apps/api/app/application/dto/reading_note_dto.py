@@ -5,6 +5,8 @@ from pydantic import BaseModel, ConfigDict
 
 
 class ReadingNoteResponse(BaseModel):
+    """API response representation of a reading note."""
+
     id: uuid.UUID
     book_id: uuid.UUID
     content_markdown: str

@@ -10,10 +10,13 @@ from app.infrastructure.persistence.models.reading_goal_model import ReadingGoal
 
 
 class SQLAlchemyReadingGoalRepository(ReadingGoalRepository):
+    """SQLAlchemy implementation of the ReadingGoalRepository interface."""
+
     def __init__(self, session: AsyncSession):
         self.session = session
 
     def _to_entity(self, model: ReadingGoalModel) -> ReadingGoal:
+        """Map an ORM ReadingGoalModel to a ReadingGoal domain entity."""
         return ReadingGoal(
             id=model.id,
             user_id=model.user_id,
@@ -28,6 +31,7 @@ class SQLAlchemyReadingGoalRepository(ReadingGoalRepository):
     async def get_by_user_year(
         self, user_id: uuid.UUID, year: int
     ) -> ReadingGoal | None:
+        """Fetch a user's reading goal for a specific year, or None if unset."""
         query = select(ReadingGoalModel).where(
             ReadingGoalModel.user_id == user_id,
             ReadingGoalModel.year == year,
@@ -37,6 +41,7 @@ class SQLAlchemyReadingGoalRepository(ReadingGoalRepository):
         return self._to_entity(model) if model else None
 
     async def upsert(self, goal: ReadingGoal) -> ReadingGoal:
+        """Create the (user, year) goal if absent, otherwise update its targets."""
         query = select(ReadingGoalModel).where(
             ReadingGoalModel.user_id == goal.user_id,
             ReadingGoalModel.year == goal.year,
@@ -65,6 +70,7 @@ class SQLAlchemyReadingGoalRepository(ReadingGoalRepository):
         return self._to_entity(model)
 
     async def list_by_user(self, user_id: uuid.UUID) -> list[ReadingGoal]:
+        """List all reading goals for a user, most recent year first."""
         query = (
             select(ReadingGoalModel)
             .where(ReadingGoalModel.user_id == user_id)

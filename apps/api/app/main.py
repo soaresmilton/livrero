@@ -17,6 +17,7 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Populate SQLAlchemy metadata by importing all ORM models on startup."""
     # Import all models so SQLAlchemy metadata is populated
     import app.infrastructure.persistence.models  # noqa: F401
 
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
+    """Build and configure the FastAPI application, including CORS and routers."""
     app = FastAPI(
         title="Livrero API",
         description="Personal Reading OS — Digital Sanctuary",

@@ -9,6 +9,8 @@ from app.infrastructure.persistence.database import Base
 
 
 class RefreshTokenModel(Base):
+    """SQLAlchemy ORM model for the `refresh_tokens` table."""
+
     __tablename__ = "refresh_tokens"
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -33,6 +35,8 @@ class RefreshTokenModel(Base):
 
 
 class PasswordResetTokenModel(Base):
+    """SQLAlchemy ORM model for the `password_reset_tokens` table."""
+
     __tablename__ = "password_reset_tokens"
 
     id: Mapped[uuid.UUID] = mapped_column(

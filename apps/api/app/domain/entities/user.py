@@ -6,6 +6,8 @@ from uuid import UUID
 
 @dataclass
 class User:
+    """Domain entity representing an application user."""
+
     id: UUID
     name: str
     email: str

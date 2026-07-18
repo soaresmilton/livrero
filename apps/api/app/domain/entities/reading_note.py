@@ -5,6 +5,8 @@ from uuid import UUID
 
 @dataclass
 class ReadingNote:
+    """Domain entity representing a markdown note attached to a book."""
+
     id: UUID
     user_id: UUID
     book_id: UUID

@@ -8,10 +8,13 @@ from app.infrastructure.persistence.models.user_model import UserModel
 
 
 class SQLAlchemyUserRepository:
+    """SQLAlchemy implementation of the UserRepository protocol."""
+
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
     async def find_by_id(self, user_id: UUID) -> User | None:
+        """Fetch a user by their id, or None if not found."""
         result = await self._session.execute(
             select(UserModel).where(UserModel.id == user_id)
         )
@@ -19,6 +22,7 @@ class SQLAlchemyUserRepository:
         return self._to_entity(model) if model else None
 
     async def find_by_email(self, email: str) -> User | None:
+        """Fetch a user by their email (case-insensitive), or None if not found."""
         result = await self._session.execute(
             select(UserModel).where(UserModel.email == email.lower())
         )
@@ -26,6 +30,7 @@ class SQLAlchemyUserRepository:
         return self._to_entity(model) if model else None
 
     async def save(self, user: User) -> User:
+        """Insert a new user row and return the domain entity."""
         model = UserModel(
             id=user.id,
             name=user.name,
@@ -40,6 +45,7 @@ class SQLAlchemyUserRepository:
         return user
 
     async def update(self, user: User) -> User:
+        """Persist changes from the domain entity onto the existing row."""
         result = await self._session.execute(
             select(UserModel).where(UserModel.id == user.id)
         )
@@ -56,6 +62,7 @@ class SQLAlchemyUserRepository:
 
     @staticmethod
     def _to_entity(model: UserModel) -> User:
+        """Map an ORM UserModel to a User domain entity."""
         return User(
             id=model.id,
             name=model.name,

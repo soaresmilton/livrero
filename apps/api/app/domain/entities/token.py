@@ -5,6 +5,8 @@ from uuid import UUID
 
 @dataclass
 class RefreshToken:
+    """Domain entity representing a hashed JWT refresh token issued to a user."""
+
     id: UUID
     user_id: UUID
     token_hash: str
@@ -15,6 +17,8 @@ class RefreshToken:
 
 @dataclass
 class PasswordResetToken:
+    """Domain entity representing a hashed, time-limited password reset token."""
+
     id: UUID
     user_id: UUID
     token_hash: str

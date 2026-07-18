@@ -9,6 +9,8 @@ from app.infrastructure.persistence.database import Base
 
 
 class ReadingSessionModel(Base):
+    """SQLAlchemy ORM model for the `reading_sessions` table."""
+
     __tablename__ = "reading_sessions"
 
     id: Mapped[uuid.UUID] = mapped_column(

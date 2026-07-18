@@ -11,6 +11,8 @@ from app.infrastructure.persistence.types import StringArray
 
 
 class BookModel(Base):
+    """SQLAlchemy ORM model for the `books` table."""
+
     __tablename__ = "books"
 
     id: Mapped[uuid.UUID] = mapped_column(

@@ -7,6 +7,7 @@ from app.infrastructure.config.settings import get_settings
 
 
 def create_access_token(user_id: UUID) -> str:
+    """Create a signed JWT access token for the given user, with an expiry."""
     settings = get_settings()
     expire = datetime.now(UTC) + timedelta(minutes=settings.access_token_expire_minutes)
     payload = {
@@ -18,6 +19,7 @@ def create_access_token(user_id: UUID) -> str:
 
 
 def decode_access_token(token: str) -> dict:
+    """Decode and validate a JWT access token, raising ValueError if invalid."""
     settings = get_settings()
     try:
         payload = jwt.decode(

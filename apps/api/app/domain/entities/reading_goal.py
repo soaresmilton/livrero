@@ -5,6 +5,8 @@ from uuid import UUID
 
 @dataclass
 class ReadingGoal:
+    """Domain entity representing a user's annual reading goal."""
+
     id: UUID
     user_id: UUID
     year: int

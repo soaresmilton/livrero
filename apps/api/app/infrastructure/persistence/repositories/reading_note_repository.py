@@ -9,10 +9,13 @@ from app.infrastructure.persistence.models.reading_note_model import ReadingNote
 
 
 class SQLAlchemyReadingNoteRepository(ReadingNoteRepository):
+    """SQLAlchemy implementation of the ReadingNoteRepository interface."""
+
     def __init__(self, session: AsyncSession):
         self.session = session
 
     def _to_entity(self, model: ReadingNoteModel) -> ReadingNote:
+        """Map an ORM ReadingNoteModel to a ReadingNote domain entity."""
         return ReadingNote(
             id=model.id,
             user_id=model.user_id,
@@ -23,6 +26,7 @@ class SQLAlchemyReadingNoteRepository(ReadingNoteRepository):
         )
 
     def _to_model(self, entity: ReadingNote) -> ReadingNoteModel:
+        """Map a ReadingNote domain entity to an ORM ReadingNoteModel."""
         return ReadingNoteModel(
             id=entity.id,
             user_id=entity.user_id,
@@ -33,12 +37,14 @@ class SQLAlchemyReadingNoteRepository(ReadingNoteRepository):
         )
 
     async def save(self, note: ReadingNote) -> ReadingNote:
+        """Insert or update a reading note (merged by primary key)."""
         model = self._to_model(note)
         merged = await self.session.merge(model)
         await self.session.flush()
         return self._to_entity(merged)
 
     async def get_by_book_id(self, book_id: uuid.UUID) -> ReadingNote | None:
+        """Fetch the note for a book, or None if it has none."""
         query = select(ReadingNoteModel).where(ReadingNoteModel.book_id == book_id)
         result = await self.session.execute(query)
         model = result.scalar_one_or_none()
@@ -49,6 +55,7 @@ class SQLAlchemyReadingNoteRepository(ReadingNoteRepository):
     async def list_recent(
         self, user_id: uuid.UUID, limit: int = 10
     ) -> list[ReadingNote]:
+        """List a user's most recently updated notes."""
         query = (
             select(ReadingNoteModel)
             .where(ReadingNoteModel.user_id == user_id)

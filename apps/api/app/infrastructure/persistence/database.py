@@ -21,10 +21,13 @@ AsyncSessionLocal = async_sessionmaker(
 
 
 class Base(DeclarativeBase):
+    """Declarative base class for all SQLAlchemy ORM models."""
+
     pass
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    """Yield an async database session, committing on success and rolling back on error."""
     async with AsyncSessionLocal() as session:
         try:
             yield session

@@ -17,6 +17,7 @@ async def list_recent_notes(
     user: User = Depends(get_current_user),
     repo: ReadingNoteRepository = Depends(get_note_repository),
 ) -> list[ReadingNoteResponse]:
+    """List the current user's most recently updated notes."""
     use_case = ManageNotesUseCase(repo)
     notes = await use_case.list_recent(user.id, limit)
     return [ReadingNoteResponse.model_validate(note) for note in notes]
@@ -28,6 +29,7 @@ async def get_book_note(
     user: User = Depends(get_current_user),
     repo: ReadingNoteRepository = Depends(get_note_repository),
 ) -> ReadingNoteResponse:
+    """Fetch a book's note, or an empty one if none exists yet."""
     try:
         parsed_uuid = uuid.UUID(book_id)
     except ValueError as e:
@@ -47,6 +49,7 @@ async def save_book_note(
     user: User = Depends(get_current_user),
     repo: ReadingNoteRepository = Depends(get_note_repository),
 ) -> ReadingNoteResponse:
+    """Create or update the note for a book owned by the current user."""
     try:
         parsed_uuid = uuid.UUID(book_id)
     except ValueError as e:

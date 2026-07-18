@@ -5,6 +5,8 @@ from app.domain.entities.reading_note import ReadingNote
 
 
 class ReadingNoteRepository(abc.ABC):
+    """Repository interface for persisting and querying reading notes."""
+
     @abc.abstractmethod
     async def save(self, note: ReadingNote) -> ReadingNote:
         """Create or update a note"""

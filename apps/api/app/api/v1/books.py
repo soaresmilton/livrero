@@ -29,6 +29,7 @@ async def add_book(
     user: User = Depends(get_current_user),
     repo: BookRepository = Depends(get_book_repository),
 ) -> BookResponse:
+    """Add a new book to the current user's library."""
     use_case = AddBook(repo)
     return await use_case.execute(user.id, request)
 
@@ -40,6 +41,7 @@ async def update_book(
     user: User = Depends(get_current_user),
     repo: BookRepository = Depends(get_book_repository),
 ) -> BookResponse:
+    """Partially update a book owned by the current user."""
     import uuid
 
     try:
@@ -59,6 +61,7 @@ async def search_books(
     limit: int = Query(5, ge=1, le=20),
     open_library: OpenLibraryIntegration = Depends(get_open_library),
 ) -> list[OpenLibraryBookResponse]:
+    """Search Open Library for books matching a query string."""
     use_case = SearchOpenLibrary(open_library)
     return await use_case.execute(q, limit)
 
@@ -69,6 +72,7 @@ async def get_book(
     user: User = Depends(get_current_user),
     repo: BookRepository = Depends(get_book_repository),
 ) -> BookResponse:
+    """Fetch a single book owned by the current user."""
     import uuid
 
     try:
@@ -93,6 +97,7 @@ async def delete_book(
     user: User = Depends(get_current_user),
     repo: BookRepository = Depends(get_book_repository),
 ) -> None:
+    """Delete a book owned by the current user."""
     import uuid
 
     try:
@@ -115,5 +120,6 @@ async def list_books(
     user: User = Depends(get_current_user),
     repo: BookRepository = Depends(get_book_repository),
 ) -> PaginatedBookResponse:
+    """List the current user's books with pagination, status, and search filters."""
     use_case = ListUserBooks(repo)
     return await use_case.execute(user.id, page, size, book_status, q)

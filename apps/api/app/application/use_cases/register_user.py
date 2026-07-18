@@ -9,10 +9,13 @@ from app.shared.exceptions import ConflictError
 
 
 class RegisterUser:
+    """Use case for registering a new user account."""
+
     def __init__(self, user_repository: UserRepository) -> None:
         self._users = user_repository
 
     async def execute(self, request: RegisterRequest) -> UserResponse:
+        """Create a new user with a hashed password, rejecting duplicate emails."""
         email = request.email.lower()
 
         existing = await self._users.find_by_email(email)

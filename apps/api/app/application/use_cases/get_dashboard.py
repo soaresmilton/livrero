@@ -45,11 +45,14 @@ def build_heatmap_counts(sessions: Iterable[SessionStat], year: int) -> dict[dat
 
 
 def _progress(current: int, target: int) -> GoalProgress:
+    """Build a GoalProgress with the percent of target reached (0 if target is 0)."""
     percent = round(current / target * 100, 1) if target > 0 else 0.0
     return GoalProgress(target=target, current=current, percent=percent)
 
 
 class GetDashboardUseCase:
+    """Use case for building the reading dashboard summary and heatmap."""
+
     def __init__(
         self,
         stats_repo: SQLAlchemyStatsRepository,
@@ -61,6 +64,7 @@ class GetDashboardUseCase:
     async def get_summary(
         self, user_id: uuid.UUID, year: int
     ) -> DashboardSummaryResponse:
+        """Aggregate a user's reading stats and goal progress for a given year."""
         sessions = await self.stats_repo.get_finished_sessions(user_id)
         year_sessions = [s for s in sessions if s.start_time.year == year]
 
@@ -111,6 +115,7 @@ class GetDashboardUseCase:
         )
 
     async def get_heatmap(self, user_id: uuid.UUID, year: int) -> HeatmapResponse:
+        """Build the per-day reading activity heatmap for a given year."""
         sessions = await self.stats_repo.get_finished_sessions(user_id)
         counts = build_heatmap_counts(sessions, year)
         days = [

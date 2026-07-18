@@ -8,6 +8,8 @@ from app.infrastructure.persistence.database import Base
 
 
 class ReadingNoteModel(Base):
+    """SQLAlchemy ORM model for the `reading_notes` table."""
+
     __tablename__ = "reading_notes"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)

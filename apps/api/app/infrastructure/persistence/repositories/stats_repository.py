@@ -14,6 +14,8 @@ from app.infrastructure.persistence.models.reading_session_model import (
 
 @dataclass
 class SessionStat:
+    """Aggregated stats for a single finished reading session."""
+
     start_time: datetime
     minutes_read: int
     pages: int
@@ -21,6 +23,8 @@ class SessionStat:
 
 @dataclass
 class CurrentBookStat:
+    """Summary of the book currently being read, for dashboard queries."""
+
     id: uuid.UUID
     title: str
     author: str
@@ -36,6 +40,7 @@ class SQLAlchemyStatsRepository:
         self.session = session
 
     async def get_finished_sessions(self, user_id: uuid.UUID) -> list[SessionStat]:
+        """Fetch stats for all of a user's completed reading sessions."""
         query = select(
             ReadingSessionModel.start_time,
             ReadingSessionModel.minutes_read,
@@ -62,6 +67,7 @@ class SQLAlchemyStatsRepository:
         return stats
 
     async def count_completed_books(self, user_id: uuid.UUID) -> int:
+        """Count all of a user's non-deleted books with status READ."""
         query = select(func.count()).where(
             BookModel.user_id == user_id,
             ~BookModel.is_deleted,
@@ -71,6 +77,7 @@ class SQLAlchemyStatsRepository:
         return int(result.scalar_one())
 
     async def count_completed_books_in_year(self, user_id: uuid.UUID, year: int) -> int:
+        """Count a user's books finished within the given calendar year."""
         query = select(func.count()).where(
             BookModel.user_id == user_id,
             ~BookModel.is_deleted,
@@ -82,6 +89,11 @@ class SQLAlchemyStatsRepository:
         return int(result.scalar_one())
 
     async def get_current_book(self, user_id: uuid.UUID) -> CurrentBookStat | None:
+        """Find the book the user is currently reading.
+
+        Prefers the book of an active (not yet ended) session, falling back
+        to the most recently updated book with status READING.
+        """
         # Prefer the book of an active (not yet ended) session
         active_query = (
             select(ReadingSessionModel.book_id)

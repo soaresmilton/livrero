@@ -14,12 +14,15 @@ from app.infrastructure.integrations.open_library import OpenLibraryIntegration
 
 
 class AddBook:
+    """Use case for adding a new book to a user's library."""
+
     def __init__(self, book_repository: BookRepository):
         self._book_repository = book_repository
 
     async def execute(
         self, user_id: uuid.UUID, request: CreateBookRequest
     ) -> BookResponse:
+        """Create and persist a new book for the given user."""
         now = datetime.now(UTC)
         book = Book(
             id=uuid.uuid4(),
@@ -42,12 +45,20 @@ class AddBook:
 
 
 class UpdateBook:
+    """Use case for partially updating an existing book's fields and status."""
+
     def __init__(self, book_repository: BookRepository):
         self._book_repository = book_repository
 
     async def execute(
         self, user_id: uuid.UUID, book_id: uuid.UUID, request: UpdateBookRequest
     ) -> BookResponse:
+        """Apply the requested field changes to a book owned by the user.
+
+        Enforces status transition rules (e.g. a completed book cannot revert
+        to reading or want-to-read) and updates `finished_reading_at` when the
+        status changes to/from READ.
+        """
         book = await self._book_repository.get_by_id(book_id)
         if not book:
             from app.shared.exceptions import not_found
@@ -101,6 +112,8 @@ class UpdateBook:
 
 
 class ListUserBooks:
+    """Use case for listing a user's books with pagination and filters."""
+
     def __init__(self, book_repository: BookRepository):
         self._book_repository = book_repository
 
@@ -112,6 +125,7 @@ class ListUserBooks:
         status: BookStatus | None = None,
         search_query: str | None = None,
     ) -> PaginatedBookResponse:
+        """Fetch a page of the user's books, optionally filtered by status/search."""
         offset = (page - 1) * size
         books, total = await self._book_repository.list_by_user(
             user_id, size, offset, status, search_query
@@ -129,20 +143,26 @@ class ListUserBooks:
 
 
 class SearchOpenLibrary:
+    """Use case for searching book metadata via the Open Library integration."""
+
     def __init__(self, open_library: OpenLibraryIntegration):
         self._open_library = open_library
 
     async def execute(
         self, query: str, limit: int = 5
     ) -> list[OpenLibraryBookResponse]:
+        """Search Open Library for books matching the query, capped at limit results."""
         return await self._open_library.search(query, limit)
 
 
 class RemoveBook:
+    """Use case for deleting a book from a user's library."""
+
     def __init__(self, book_repository: BookRepository):
         self._book_repository = book_repository
 
     async def execute(self, user_id: uuid.UUID, book_id: uuid.UUID) -> None:
+        """Delete the given book after verifying it belongs to the user."""
         book = await self._book_repository.get_by_id(book_id)
         if not book:
             from app.shared.exceptions import not_found

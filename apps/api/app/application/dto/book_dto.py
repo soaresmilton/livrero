@@ -7,6 +7,8 @@ from app.domain.entities.book import BookStatus
 
 
 class CreateBookRequest(BaseModel):
+    """Request payload for creating a new book."""
+
     title: str = Field(..., max_length=255)
     author: str = Field(..., max_length=255)
     publisher: str | None = Field(None, max_length=255)
@@ -20,6 +22,8 @@ class CreateBookRequest(BaseModel):
 
 
 class UpdateBookRequest(BaseModel):
+    """Request payload for partially updating an existing book."""
+
     title: str | None = Field(None, max_length=255)
     author: str | None = Field(None, max_length=255)
     publisher: str | None = Field(None, max_length=255)
@@ -33,6 +37,8 @@ class UpdateBookRequest(BaseModel):
 
 
 class BookResponse(BaseModel):
+    """API response representation of a book."""
+
     id: UUID
     user_id: UUID
     title: str
@@ -57,6 +63,8 @@ class BookResponse(BaseModel):
 
 
 class PaginatedBookResponse(BaseModel):
+    """Paginated list of books."""
+
     items: list[BookResponse]
     total: int
     page: int
@@ -65,6 +73,8 @@ class PaginatedBookResponse(BaseModel):
 
 
 class OpenLibraryBookResponse(BaseModel):
+    """Book metadata retrieved from the Open Library API."""
+
     title: str
     author: str
     publisher: str | None = None

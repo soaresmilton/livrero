@@ -5,6 +5,8 @@ from uuid import UUID
 
 
 class BookStatus(StrEnum):
+    """Lifecycle status of a book within a user's library."""
+
     WANT_TO_READ = "WANT_TO_READ"
     READING = "READING"
     READ = "READ"
@@ -13,6 +15,8 @@ class BookStatus(StrEnum):
 
 @dataclass
 class Book:
+    """Domain entity representing a book owned by a user."""
+
     id: UUID
     user_id: UUID
     title: str

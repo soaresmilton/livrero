@@ -9,6 +9,8 @@ from app.infrastructure.persistence.database import Base
 
 
 class UserModel(Base):
+    """SQLAlchemy ORM model for the `users` table."""
+
     __tablename__ = "users"
 
     id: Mapped[uuid.UUID] = mapped_column(

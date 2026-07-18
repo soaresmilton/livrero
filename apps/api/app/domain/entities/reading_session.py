@@ -5,6 +5,8 @@ from uuid import UUID
 
 @dataclass
 class ReadingSession:
+    """Domain entity representing a single reading session for a book."""
+
     id: UUID
     user_id: UUID
     book_id: UUID

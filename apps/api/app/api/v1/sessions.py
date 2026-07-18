@@ -29,6 +29,7 @@ router = APIRouter(prefix="/sessions", tags=["Sessions"])
 def get_manage_sessions_use_case(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> ManageSessionsUseCase:
+    """Provide a ManageSessionsUseCase wired with its repositories for dependency injection."""
     return ManageSessionsUseCase(
         session_repo=SQLAlchemyReadingSessionRepository(session),
         book_repo=SQLAlchemyBookRepository(session),

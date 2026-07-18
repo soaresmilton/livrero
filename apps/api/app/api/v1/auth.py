@@ -47,6 +47,7 @@ REFRESH_COOKIE_NAME = "refresh_token"
 
 
 def _set_refresh_cookie(response: Response, raw_token: str) -> None:
+    """Set the HttpOnly refresh token cookie scoped to the auth routes."""
     response.set_cookie(
         key=REFRESH_COOKIE_NAME,
         value=raw_token,
@@ -65,6 +66,7 @@ async def register(
     body: RegisterRequest,
     session: AsyncSession = Depends(get_session),
 ) -> UserResponse:
+    """Register a new user account."""
     use_case = RegisterUser(user_repository=SQLAlchemyUserRepository(session))
     try:
         return await use_case.execute(body)
@@ -78,6 +80,7 @@ async def login(
     response: Response,
     session: AsyncSession = Depends(get_session),
 ) -> TokenResponse:
+    """Authenticate a user and set the refresh token cookie."""
     use_case = LoginUser(
         user_repository=SQLAlchemyUserRepository(session),
         refresh_token_repository=SQLAlchemyRefreshTokenRepository(session),
@@ -96,6 +99,7 @@ async def logout(
     refresh_token: str | None = Cookie(default=None, alias=REFRESH_COOKIE_NAME),
     session: AsyncSession = Depends(get_session),
 ) -> None:
+    """Revoke the refresh token (if present) and clear the refresh cookie."""
     if refresh_token:
         use_case = LogoutUser(
             refresh_token_repository=SQLAlchemyRefreshTokenRepository(session)
@@ -113,6 +117,7 @@ async def refresh(
     refresh_token: str | None = Cookie(default=None, alias=REFRESH_COOKIE_NAME),
     session: AsyncSession = Depends(get_session),
 ) -> AccessTokenResponse:
+    """Rotate the refresh token and issue a new access token."""
     if not refresh_token:
         raise unauthorized("No refresh token provided")
     use_case = RefreshTokenUseCase(
@@ -129,6 +134,7 @@ async def refresh(
 
 @router.get("/me", response_model=UserResponse)
 async def me(current_user: User = Depends(get_current_user)) -> UserResponse:
+    """Return the currently authenticated user's profile."""
     return UserResponse.model_validate(current_user)
 
 
@@ -138,6 +144,7 @@ async def update_theme(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> UserResponse:
+    """Update the current user's UI theme preference."""
     current_user.theme = body.theme
     current_user.updated_at = datetime.now(UTC)
     updated = await SQLAlchemyUserRepository(session).update(current_user)
@@ -149,6 +156,7 @@ async def forgot_password(
     body: ForgotPasswordRequest,
     session: AsyncSession = Depends(get_session),
 ) -> MessageResponse:
+    """Initiate a password reset for the given email, if registered."""
     use_case = ForgotPassword(
         user_repository=SQLAlchemyUserRepository(session),
         reset_token_repository=SQLAlchemyPasswordResetTokenRepository(session),
@@ -161,6 +169,7 @@ async def reset_password(
     body: ResetPasswordRequest,
     session: AsyncSession = Depends(get_session),
 ) -> MessageResponse:
+    """Complete a password reset using a valid reset token."""
     use_case = ResetPassword(
         user_repository=SQLAlchemyUserRepository(session),
         reset_token_repository=SQLAlchemyPasswordResetTokenRepository(session),

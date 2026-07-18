@@ -12,10 +12,13 @@ from app.infrastructure.persistence.models.token_model import (
 
 
 class SQLAlchemyRefreshTokenRepository:
+    """SQLAlchemy implementation of the RefreshTokenRepository protocol."""
+
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
     async def save(self, token: RefreshToken) -> RefreshToken:
+        """Insert a new refresh token row and return the domain entity."""
         model = RefreshTokenModel(
             id=token.id,
             user_id=token.user_id,
@@ -29,6 +32,7 @@ class SQLAlchemyRefreshTokenRepository:
         return token
 
     async def find_by_hash(self, token_hash: str) -> RefreshToken | None:
+        """Fetch a refresh token by its hash, or None if not found."""
         result = await self._session.execute(
             select(RefreshTokenModel).where(RefreshTokenModel.token_hash == token_hash)
         )
@@ -36,6 +40,7 @@ class SQLAlchemyRefreshTokenRepository:
         return self._to_entity(model) if model else None
 
     async def revoke(self, token_id: UUID) -> None:
+        """Mark a single refresh token as revoked."""
         result = await self._session.execute(
             select(RefreshTokenModel).where(RefreshTokenModel.id == token_id)
         )
@@ -45,6 +50,7 @@ class SQLAlchemyRefreshTokenRepository:
             await self._session.flush()
 
     async def revoke_all_for_user(self, user_id: UUID) -> None:
+        """Revoke every currently active refresh token belonging to a user."""
         result = await self._session.execute(
             select(RefreshTokenModel).where(
                 RefreshTokenModel.user_id == user_id,
@@ -57,6 +63,7 @@ class SQLAlchemyRefreshTokenRepository:
         await self._session.flush()
 
     async def count_active_for_user(self, user_id: UUID) -> int:
+        """Count a user's non-revoked, unexpired refresh tokens."""
         result = await self._session.execute(
             select(func.count()).where(
                 RefreshTokenModel.user_id == user_id,
@@ -68,6 +75,7 @@ class SQLAlchemyRefreshTokenRepository:
 
     @staticmethod
     def _to_entity(model: RefreshTokenModel) -> RefreshToken:
+        """Map an ORM RefreshTokenModel to a RefreshToken domain entity."""
         return RefreshToken(
             id=model.id,
             user_id=model.user_id,
@@ -79,10 +87,13 @@ class SQLAlchemyRefreshTokenRepository:
 
 
 class SQLAlchemyPasswordResetTokenRepository:
+    """SQLAlchemy implementation of the PasswordResetTokenRepository protocol."""
+
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
     async def save(self, token: PasswordResetToken) -> PasswordResetToken:
+        """Insert a new password reset token row and return the domain entity."""
         model = PasswordResetTokenModel(
             id=token.id,
             user_id=token.user_id,
@@ -96,6 +107,7 @@ class SQLAlchemyPasswordResetTokenRepository:
         return token
 
     async def find_by_hash(self, token_hash: str) -> PasswordResetToken | None:
+        """Fetch a password reset token by its hash, or None if not found."""
         result = await self._session.execute(
             select(PasswordResetTokenModel).where(
                 PasswordResetTokenModel.token_hash == token_hash
@@ -105,6 +117,7 @@ class SQLAlchemyPasswordResetTokenRepository:
         return self._to_entity(model) if model else None
 
     async def mark_as_used(self, token_id: UUID) -> None:
+        """Mark a password reset token as used."""
         result = await self._session.execute(
             select(PasswordResetTokenModel).where(
                 PasswordResetTokenModel.id == token_id
@@ -117,6 +130,7 @@ class SQLAlchemyPasswordResetTokenRepository:
 
     @staticmethod
     def _to_entity(model: PasswordResetTokenModel) -> PasswordResetToken:
+        """Map an ORM PasswordResetTokenModel to a PasswordResetToken domain entity."""
         return PasswordResetToken(
             id=model.id,
             user_id=model.user_id,

@@ -14,6 +14,8 @@ from app.shared.exceptions import UnauthorizedError
 
 
 class LoginUser:
+    """Use case for authenticating a user and issuing access/refresh tokens."""
+
     def __init__(
         self,
         user_repository: UserRepository,

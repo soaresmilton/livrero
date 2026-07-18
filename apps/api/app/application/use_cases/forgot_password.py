@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 class ForgotPassword:
+    """Use case for initiating a password reset by issuing a reset token."""
+
     def __init__(
         self,
         user_repository: UserRepository,
@@ -22,6 +24,11 @@ class ForgotPassword:
         self._reset_tokens = reset_token_repository
 
     async def execute(self, email: str) -> MessageResponse:
+        """Issue a password reset token for the email if a matching user exists.
+
+        Always returns the same generic message regardless of whether the
+        email is registered, to avoid leaking account existence.
+        """
         user = await self._users.find_by_email(email.lower())
 
         if user:

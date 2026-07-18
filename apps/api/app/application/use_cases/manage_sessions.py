@@ -13,6 +13,8 @@ from app.shared.exceptions import ConflictError, NotFoundError
 
 
 class ManageSessionsUseCase:
+    """Use case for starting, ending, and managing reading sessions."""
+
     def __init__(
         self,
         session_repo: ReadingSessionRepository,
@@ -24,6 +26,12 @@ class ManageSessionsUseCase:
     async def start_session(
         self, user_id: uuid.UUID, request: StartSessionRequest
     ) -> ReadingSession:
+        """Start a new reading session for a book, moving it to READING if needed.
+
+        Raises ConflictError if the user already has an active session, or
+        NotFoundError if the book doesn't exist, isn't owned by the user, or
+        is deleted.
+        """
         # 1. Check if user already has an active session
         active = await self._session_repo.get_active_session(user_id)
         if active:
@@ -57,6 +65,7 @@ class ManageSessionsUseCase:
     async def end_session(
         self, user_id: uuid.UUID, session_id: uuid.UUID, request: EndSessionRequest
     ) -> ReadingSession:
+        """End an in-progress session, recording pages, notes, and minutes read."""
         session = await self._session_repo.get_by_id(session_id)
 
         if not session or session.user_id != user_id:
@@ -84,9 +93,11 @@ class ManageSessionsUseCase:
         return await self._session_repo.update(session)
 
     async def get_active_session(self, user_id: uuid.UUID) -> ReadingSession | None:
+        """Return the user's currently in-progress session, if any."""
         return await self._session_repo.get_active_session(user_id)
 
     async def discard_session(self, user_id: uuid.UUID, session_id: uuid.UUID) -> None:
+        """Delete a reading session owned by the user."""
         session = await self._session_repo.get_by_id(session_id)
         if not session or session.user_id != user_id:
             raise NotFoundError("Reading session not found")
@@ -96,6 +107,7 @@ class ManageSessionsUseCase:
     async def list_book_sessions(
         self, user_id: uuid.UUID, book_id: uuid.UUID, page: int = 1, size: int = 20
     ) -> tuple[list[ReadingSession], int]:
+        """List paginated reading sessions for a book owned by the user."""
         # Validate book
         book = await self._book_repo.get_by_id(book_id)
         if not book or book.user_id != user_id or book.is_deleted:
@@ -110,6 +122,7 @@ class ManageSessionsUseCase:
         session_id: uuid.UUID,
         request: UpdateSessionNotesRequest,
     ) -> ReadingSession:
+        """Update the notes text of a reading session owned by the user."""
         session = await self._session_repo.get_by_id(session_id)
         if not session or session.user_id != user_id:
             raise NotFoundError("Reading session not found")

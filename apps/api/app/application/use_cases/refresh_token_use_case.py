@@ -12,6 +12,8 @@ from app.shared.exceptions import UnauthorizedError
 
 
 class RefreshTokenUseCase:
+    """Use case for rotating a refresh token and issuing a new access token."""
+
     def __init__(self, refresh_token_repository: RefreshTokenRepository) -> None:
         self._tokens = refresh_token_repository
         self._settings = get_settings()

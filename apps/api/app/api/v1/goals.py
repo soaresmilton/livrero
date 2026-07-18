@@ -12,6 +12,7 @@ router = APIRouter(prefix="/goals", tags=["Goals"])
 
 
 def _current_year() -> int:
+    """Return the current UTC calendar year."""
     return datetime.now(UTC).year
 
 

@@ -8,6 +8,8 @@ from app.infrastructure.persistence.database import Base
 
 
 class ReadingGoalModel(Base):
+    """SQLAlchemy ORM model for the `reading_goals` table."""
+
     __tablename__ = "reading_goals"
     __table_args__ = (
         UniqueConstraint("user_id", "year", name="uq_reading_goals_user_year"),
