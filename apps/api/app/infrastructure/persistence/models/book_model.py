@@ -56,6 +56,3 @@ class BookModel(Base):
         cascade="all, delete-orphan",
         uselist=False,
     )
-
-    # Optional relationship
-    # user = relationship("UserModel", back_populates="books")

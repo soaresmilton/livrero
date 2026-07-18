@@ -54,6 +54,8 @@ services:
     restart: unless-stopped
     env_file:
       - ./apps/web/.env
+    environment:
+      API_PROXY_TARGET: http://api:8000
     ports:
       - "5173:5173"
     depends_on:

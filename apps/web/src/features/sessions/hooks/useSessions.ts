@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { sessionService } from '../services/sessionService';
 import { EndSessionRequest, StartSessionRequest } from '../types';
+import { toast } from '@/store/toastStore';
 
 export const sessionKeys = {
   all: ['sessions'] as const,
@@ -31,6 +32,10 @@ export function useStartSession() {
     onSuccess: (data) => {
       queryClient.setQueryData(sessionKeys.active(), data);
       queryClient.invalidateQueries({ queryKey: sessionKeys.book(data.book_id) });
+      toast.success('Reading session started', 'STARTED');
+    },
+    onError: () => {
+      toast.error("Couldn't start the session. Try again.");
     },
   });
 }
@@ -46,6 +51,10 @@ export function useEndSession() {
       queryClient.invalidateQueries({ queryKey: sessionKeys.book(data.book_id) });
       // Invalidate books to update current_page
       queryClient.invalidateQueries({ queryKey: ['books'] });
+      toast.success('Session saved — keep reading!');
+    },
+    onError: () => {
+      toast.error("Couldn't save your session. Try again.");
     },
   });
 }
@@ -60,6 +69,10 @@ export function useDiscardSession() {
       // We don't have the book_id easily here without passing it, but we can invalidate all books/sessions
       queryClient.invalidateQueries({ queryKey: sessionKeys.all });
       queryClient.invalidateQueries({ queryKey: ['books'] });
+      toast.info('Session discarded', 'DISCARDED');
+    },
+    onError: () => {
+      toast.error("Couldn't discard the session. Try again.");
     },
   });
 }
