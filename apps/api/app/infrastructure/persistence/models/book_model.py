@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import JSON, DateTime, Enum, Float, ForeignKey, Integer, String, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import DateTime, Enum, Float, ForeignKey, Integer, String, func
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.domain.entities.book import BookStatus
@@ -28,7 +28,7 @@ class BookModel(Base):
     total_pages: Mapped[int | None] = mapped_column(Integer, nullable=True)
     cover_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     isbn: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    genres: Mapped[list] = mapped_column(JSON, default=list, server_default="[]")
+    genres: Mapped[list] = mapped_column(ARRAY(String), default=list, server_default="{}")
     rating: Mapped[float | None] = mapped_column(Float, nullable=True)
     status: Mapped[BookStatus] = mapped_column(
         Enum(BookStatus, name="book_status_enum", create_type=False), nullable=False
